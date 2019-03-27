@@ -16,6 +16,12 @@ export const addItem =  (item) => {
     });
 }
 
+export const delItem =  (item) => {
+    db.ref('/items').remove({
+        name: item
+    });
+}
+
 export default class AddItem extends Component {
   state = {
     name: ''
@@ -29,6 +35,9 @@ export default class AddItem extends Component {
   handleSubmit = () => {
     addItem(this.state.name);
   };
+  handleDel = () => {
+    delItem(this.state.name);
+  };
 
   render() {
     return (
@@ -39,6 +48,14 @@ export default class AddItem extends Component {
           style={styles.button}
           onPress={this.handleSubmit}>
           <Text style={styles.buttonText}>Add</Text>
+        </TouchableHighlight>
+
+        <Text style={styles.title}>Del Item</Text>
+        <TextInput style={styles.itemInput} onChange={this.handleChange} />
+        <TouchableHighlight
+          style={styles.button}
+          onPress={this.handleDel}>
+          <Text style={styles.buttonText}>Del</Text>
         </TouchableHighlight>
       </View>
     );
