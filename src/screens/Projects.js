@@ -16,10 +16,8 @@ export const addItem =  (item) => {
     });
 }
 
-export const delItem =  (item) => {
-    db.ref('/items').remove({
-        name: item
-    });
+export const delItem =  () => {
+    db.ref('/items').remove();
 }
 
 export default class AddItem extends Component {
@@ -50,8 +48,7 @@ export default class AddItem extends Component {
           <Text style={styles.buttonText}>Add</Text>
         </TouchableHighlight>
 
-        <Text style={styles.title}>Del Item</Text>
-        <TextInput style={styles.itemInput} onChange={this.handleChange} />
+        <Text style={styles.title}>Del Items:</Text>
         <TouchableHighlight
           style={styles.button}
           onPress={this.handleDel}>
