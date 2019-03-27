@@ -1,21 +1,32 @@
 import React, { Component } from 'react';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer, createMaterialTopTabNavigator } from 'react-navigation';
 import Home from './src/screens/Home';
 
 // we will use these two screens later in our AppNavigator
-import AddItem from './src/screens/AddItem';
-import List from './src/screens/List';
+import Projects from './src/screens/Projects';
+import Timeline from './src/screens/Timeline';
+import Options from './src/screens/Options';
 
-const AppNavigator = createStackNavigator(
-  {
-    Home,
-    AddItem,
-    List
-  },
-  {
-    initialRouteName: 'Home'
-  }
-);
+const AppNavigator = createMaterialTopTabNavigator({
+    Home: Home,
+    Projects: Projects,
+    Timeline: Timeline,
+    Options: Options
+},{
+    tabBarOptions: {
+        activeTintColor: '#000',
+        inactiveTintColor: 'gray',
+        labelStyle: {
+          fontSize: 12,
+        },
+        style: {
+            backgroundColor: '#fff',
+        },
+        indicatorStyle: {
+            backgroundColor: '#000',
+        },
+    }
+});
 
 const AppContainer = createAppContainer(AppNavigator);
 
