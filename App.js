@@ -4,12 +4,14 @@ import Home from './src/screens/Home';
 
 // we will use these two screens later in our AppNavigator
 import Projects from './src/screens/Projects';
+import SignUp from './src/screens/SignUp';
 import Timeline from './src/screens/Timeline';
 import Options from './src/screens/Options';
 
 const AppNavigator = createMaterialTopTabNavigator({
     Home: Home,
     Projects: Projects,
+    SignUp: SignUp,
     Timeline: Timeline,
     Options: Options
 },{

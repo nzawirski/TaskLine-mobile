@@ -9,10 +9,12 @@ import {
 import firebase from '@firebase/database';
 
 import { db } from '../config';
+import {auth} from '../config';
+
 
 export const addItem =  (item) => {
-    db.ref('/items').push({
-        name: item
+    db.ref('items/'+auth.currentUser.uid).set({
+        email: auth.currentUser.email
     });
 }
 

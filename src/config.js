@@ -1,4 +1,6 @@
-import Firebase from '@firebase/app';
+import Firebase from '@firebase/app'
+import '@firebase/auth'
+
  let config = {
   apiKey: "AIzaSyCCg8GZ67b5q-eAZAFrDbWVAxg-cnjae7k",
   authDomain: "taskline-235718.firebaseapp.com",
@@ -7,5 +9,8 @@ import Firebase from '@firebase/app';
   storageBucket: "taskline-235718.appspot.com",
   messagingSenderId: "461042728911"
 };
+
 let app = Firebase.initializeApp(config);
+
+export const auth = app.auth();
 export const db = app.database();
