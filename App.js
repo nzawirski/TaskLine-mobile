@@ -14,7 +14,6 @@ import SignUp from './src/screens/SignUp';
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,
   Projects: Projects,
-  Login: Login,
   Timeline: Timeline,
   Options: Options
 }, {
