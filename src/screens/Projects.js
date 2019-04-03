@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import { db } from '../config';
+import { firestore } from '../config';
 import {auth} from '../config';
 
 
@@ -15,6 +16,11 @@ export const addItem =  (item) => {
     db.ref('items/'+auth.currentUser.uid).set({
         email: auth.currentUser.email
     });
+
+    firestore.collection("Project").doc(auth.currentUser.uid).collection("Task").add({
+      Name: "Dogu",
+      Date: new Date(),
+  })
 }
 
 export const delItem =  () => {
