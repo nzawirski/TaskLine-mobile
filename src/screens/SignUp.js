@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet, TextInput, TouchableHighlight } from 'react-native';
 
 import { auth } from '../config';
+import { db } from '../config';
 
 export default class SignUp extends Component {
   state = {
@@ -30,13 +31,19 @@ export default class SignUp extends Component {
 
   handleSubmit = () => {
     //create user
-    auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
-    //save him in database
-    db.ref('items/' + auth.currentUser.uid).set({
-      email: auth.currentUser.email
-    });
-    //if succeeded go to app stack
+    auth.createUserWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+      //save him in database
+      console.warn(auth.currentUser)
+      db.ref('items/' + auth.currentUser.uid).set({
+        email: auth.currentUser.email
+      });
+
+      //if succeeded go to app stack
     this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth');
+    })
+
+    //TODO: handle errors
+
   };
 
   render() {

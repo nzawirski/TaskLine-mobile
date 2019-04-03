@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
-import { Button, View, Text } from 'react-native';
+import { Button, View, Text, TouchableHighlight } from 'react-native';
+import DisplayUserName from '../components/DisplayUserName';
+
+import { auth } from '../config';
 
 export default class Home extends Component {
+
+  logOut = () => {
+    try {
+      auth.signOut();
+      // signed out
+    } catch (e) {
+      // an error
+    }
+  }
+
   render() {
     return (
       <View>
@@ -15,6 +28,12 @@ export default class Home extends Component {
           color="green"
           onPress={() => this.props.navigation.navigate('List')}
         />
+        <DisplayUserName></DisplayUserName>
+        <TouchableHighlight
+          
+          onPress={this.logOut}>
+          <Text>Log Out</Text>
+        </TouchableHighlight>
       </View>
     );
   }
