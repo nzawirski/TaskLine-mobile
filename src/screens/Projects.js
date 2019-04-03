@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
-import firebase from '@firebase/database';
 
 import { db } from '../config';
 import {auth} from '../config';

@@ -1,24 +1,18 @@
 import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet, TextInput, TouchableHighlight } from 'react-native';
-import firebase from '@firebase/auth';
 
 import { auth } from '../config';
-
-
 
 export default class SignUp extends Component {
   state = {
     email: '',
     password: '',
-    authenticating: false,
     user: null,
-    error: '',
-    showing: 'signin'
   }
 
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
-      this.setState({ sessionChecked: true, user })
+      this.setState({ user })
     })
   }
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet, TextInput, TouchableHighlight } from 'react-native';
-import firebase from '@firebase/auth';
 
 import {auth} from '../config';
 
@@ -10,15 +9,12 @@ export default class Login extends Component {
     state = {
         email: '',
         password: '',
-        authenticating: false,
         user: null,
-        error: '',
-        showing: 'signin'
       }
     
-      componentDidMount() {
+    componentDidMount() {
         auth.onAuthStateChanged((user) => {
-          this.setState({sessionChecked: true, user})
+          this.setState({ user })
         })
     }
     
@@ -35,8 +31,9 @@ export default class Login extends Component {
       };
     
     handleSubmit = () => {
-        auth.signInWithEmailAndPassword(this.state.email, this.state.password)
-        this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth');
+        auth.signInWithEmailAndPassword(this.state.email, this.state.password).then(()=>
+        this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth'))
+        
     };
 
   render() {

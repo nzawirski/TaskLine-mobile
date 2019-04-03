@@ -16,8 +16,8 @@ export default class AuthLoadingScreen extends React.Component {
     }
 
     componentDidMount() {
-        
-        this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth');
+        auth.onAuthStateChanged(user => {
+            this.props.navigation.navigate(user ? 'App' : 'Auth')})
     }
 
     // Render any loading content that you like here
