@@ -1,5 +1,6 @@
 import Firebase from '@firebase/app'
 import '@firebase/auth'
+import '@firebase/database'
 
  let config = {
   apiKey: "AIzaSyCCg8GZ67b5q-eAZAFrDbWVAxg-cnjae7k",
@@ -7,7 +8,7 @@ import '@firebase/auth'
   databaseURL: "https://taskline-235718.firebaseio.com",
   projectId: "taskline-235718",
   storageBucket: "taskline-235718.appspot.com",
-  messagingSenderId: "461042728911"
+  messagingSenderId: "461042728911",
 };
 
 let app = Firebase.initializeApp(config);
