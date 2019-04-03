@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { createSwitchNavigator, createStackNavigator, createAppContainer, createMaterialTopTabNavigator } from 'react-navigation';
 
-import {auth} from './src/config';
-
 import Home from './src/screens/Home';
 import Projects from './src/screens/Projects';
 import Timeline from './src/screens/Timeline';
