@@ -6,7 +6,7 @@ import {auth} from '../config';
 
 
 
-export default class SignUp extends Component {
+export default class Login extends Component {
     state = {
         email: '',
         password: '',
@@ -35,14 +35,14 @@ export default class SignUp extends Component {
       };
     
     handleSubmit = () => {
-        auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
+        auth.signInWithEmailAndPassword(this.state.email, this.state.password)
         this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth');
     };
 
   render() {
     return (
       <View style={styles.main}>
-        <Text>SignUp Screen:</Text>
+        <Text>Login Screen:</Text>
         <Text style={styles.title}>Email:</Text>
         <TextInput style={styles.itemInput} onChange={this.handleChange1} />
 
@@ -52,6 +52,12 @@ export default class SignUp extends Component {
         <TouchableHighlight
           style={styles.button}
           onPress={this.handleSubmit}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.button2}
+          onPress={() => this.props.navigation.navigate('SignUp')}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableHighlight>
       </View>
@@ -90,6 +96,18 @@ const styles = StyleSheet.create({
       height: 45,
       flexDirection: 'row',
       backgroundColor: 'white',
+      borderColor: 'white',
+      borderWidth: 1,
+      borderRadius: 8,
+      marginBottom: 10,
+      marginTop: 10,
+      alignSelf: 'stretch',
+      justifyContent: 'center'
+    },
+    button2: {
+      height: 45,
+      flexDirection: 'row',
+      backgroundColor: 'yellow',
       borderColor: 'white',
       borderWidth: 1,
       borderRadius: 8,
