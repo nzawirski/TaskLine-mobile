@@ -6,6 +6,8 @@ import Projects from './src/screens/Projects';
 import Timeline from './src/screens/Timeline';
 import Options from './src/screens/Options';
 
+import AddProjectScreen from './src/screens/AddProjectScreen';
+
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
@@ -36,12 +38,17 @@ const AuthStack = createStackNavigator({
   SignUp: SignUp,
 });
 
+const ProjectStack = createStackNavigator({
+  Projects: Projects,
+  AddProjectScreen: AddProjectScreen
+})
 
 const AppContainer = createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
     App: AppNavigator,
     Auth: AuthStack,
+    ProjectStack: ProjectStack
   },
   {
     initialRouteName: 'AuthLoading',

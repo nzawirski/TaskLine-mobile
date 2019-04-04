@@ -12,11 +12,7 @@ export default class List extends Component {
   };
 
   componentDidMount() {
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
-    });
+    
   }
 
   render() {

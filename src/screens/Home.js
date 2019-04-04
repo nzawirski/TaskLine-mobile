@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, View, Text, TouchableHighlight } from 'react-native';
 import DisplayUserName from '../components/DisplayUserName';
 
+import { styles } from '../styles';
 import { auth } from '../config';
 
 export default class Home extends Component {
@@ -18,7 +19,6 @@ export default class Home extends Component {
   render() {
     return (
       <View>
-        <Text>Home Screen</Text>
         <Button
           title="Add an Item"
           onPress={() => this.props.navigation.navigate('AddItem')}
@@ -32,7 +32,7 @@ export default class Home extends Component {
         <TouchableHighlight
           
           onPress={this.logOut}>
-          <Text>Log Out</Text>
+          <Text  style={styles.buttonText}>Log Out</Text>
         </TouchableHighlight>
       </View>
     );
