@@ -3,8 +3,6 @@ import {
   View,
   Text,
   TouchableHighlight,
-  StyleSheet,
-  TextInput,
 } from 'react-native';
 
 import { styles } from '../styles';
@@ -13,7 +11,22 @@ import { firestore } from '../config';
 import {auth} from '../config';
 
 
-export default class Projects extends Component {
+export const addItem =  (item) => {
+    db.ref('items/'+auth.currentUser.uid).set({
+        email: auth.currentUser.email
+    });
+
+    firestore.collection("Projects").doc(auth.currentUser.uid).collection("Task").add({
+      Name: "Dogu",
+      Date: new Date(),
+  })
+}
+
+export const delItem =  () => {
+    db.ref('/items').remove();
+}
+
+export default class AddProjectScreen extends Component {
   state = {
     name: ''
   };
@@ -34,15 +47,8 @@ export default class Projects extends Component {
     return (
       <View style={{flex: 1}}>
         <View style={styles.projectsView}>
-          <Text style={styles.title}>Projects</Text>
-          <Text>TODO: show projects</Text>
-        </View>
-        <View style={styles.main}>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={() => this.props.navigation.navigate('AddProjectScreen')}>
-          <Text style={styles.buttonText}>Add project</Text>
-        </TouchableHighlight>
+          <Text style={styles.title}>TODO: handle adding projects</Text>
+          
         </View>
       </View>
     );

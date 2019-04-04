@@ -6,7 +6,14 @@ export const styles = StyleSheet.create({
       padding: 30,
       flexDirection: 'column',
       justifyContent: 'center',
-      backgroundColor: '#6565fc'
+      backgroundColor: '#6565fc',
+    },
+    projectsView: {
+      flex: 4,
+      padding: 30,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      backgroundColor: '#e0ebfc',
     },
     title: {
       marginBottom: 20,
