@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableHighlight, Image } from 'react-native';
+import { View, Text, TouchableHighlight, Image, ScrollView } from 'react-native';
 import DisplayUserName from '../components/DisplayUserName';
+import ProjectItem from '../components/ProjectItem';
 
 import { styles } from '../styles';
 import { auth } from '../config';
@@ -20,6 +21,7 @@ export default class Home extends Component {
   state = {
     nick: "",
     icon: "",
+    msgs: [],
   };
 
   componentDidMount(){
@@ -29,10 +31,20 @@ export default class Home extends Component {
       email: doc.data().email,
       icon: doc.data().icon,
     });
-  })
+    })
+
+    firestore.collection("Messages").onSnapshot((query)=>{
+      let msgs=[];
+      query.forEach((doc)=>msgs.push(doc.data().msg));
+      this.setState({ msgs });
+    })
   }
 
   render() {
+
+    let msgs = [];
+    this.state.msgs.forEach((i)=>msgs.push(<ProjectItem projectName={i}></ProjectItem>));
+
     return (
       <View style={{flex:1}}>
         <View style={styles.projectsView}>
@@ -51,8 +63,7 @@ export default class Home extends Component {
             <Text  style={styles.buttonText}>Log Out</Text>
           </TouchableHighlight>
         </View>
-        <View style={{flex:4, backgroundColor: "mediumpurple"}}>
-        </View>
+        <View style={{flex:4, backgroundColor: "#fff"}}><ScrollView>{msgs}</ScrollView></View>
       </View>
     );
   }

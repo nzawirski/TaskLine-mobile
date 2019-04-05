@@ -2,7 +2,6 @@ import React from 'react';
 import {
     ActivityIndicator,
     StatusBar,
-    StyleSheet,
     View,
 } from 'react-native';
 import { auth } from '../config';

@@ -3,7 +3,9 @@ import {
   View,
   Text,
   TouchableHighlight,
+  ScrollView,
 } from 'react-native';
+import ProjectItem from '../components/ProjectItem';
 
 import { styles } from '../styles';
 import { auth } from '../config';
@@ -30,13 +32,14 @@ export default class Projects extends Component {
 
   render() {
     let projs = [];
-    this.state.projects.forEach((i)=>projs.push(<Text>{i}</Text>));
+    this.state.projects.forEach((i)=>projs.push(<ProjectItem projectName={i}></ProjectItem>));
 
   
     return (
       <View style={{flex: 1}}>
       <View style={{flex: 1}}><Text style={styles.title}>Projects:</Text></View>
-        <View style={styles.projectsView}>{projs}</View>
+
+      <View style={{flex: 5}}><ScrollView>{projs}</ScrollView></View>
         <View style={styles.purple}>
         <TouchableHighlight
           style={styles.button2}
