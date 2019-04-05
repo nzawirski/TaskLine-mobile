@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, View, Text, TouchableHighlight } from 'react-native';
+import { View, Text, TouchableHighlight } from 'react-native';
 import DisplayUserName from '../components/DisplayUserName';
 
 import { styles } from '../styles';
@@ -18,22 +18,18 @@ export default class Home extends Component {
 
   render() {
     return (
-      <View>
-        <Button
-          title="Add an Item"
-          onPress={() => this.props.navigation.navigate('AddItem')}
-        />
-        <Button
-          title="List of Items"
-          color="green"
-          onPress={() => this.props.navigation.navigate('List')}
-        />
-        <DisplayUserName></DisplayUserName>
-        <TouchableHighlight
-          
-          onPress={this.logOut}>
-          <Text  style={styles.buttonText}>Log Out</Text>
-        </TouchableHighlight>
+      <View style={{flex:1}}>
+        <View style={styles.projectsView}>
+          <DisplayUserName></DisplayUserName>
+          <TouchableHighlight
+            style={styles.button}
+            onPress={this.logOut}
+            underlayColor={"lavender"}>
+            <Text  style={styles.buttonText}>Log Out</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{flex:16, backgroundColor: "mediumpurple"}}>
+        </View>
       </View>
     );
   }

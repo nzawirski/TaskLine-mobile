@@ -19,18 +19,6 @@ export default class SignUp extends Component {
     })
   }
 
-  handleChange1 = e => {
-    this.setState({
-      email: e.nativeEvent.text
-    });
-  };
-
-  handleChange2 = e => {
-    this.setState({
-      password: e.nativeEvent.text
-    });
-  };
-
   handleSubmit = () => {
     //create user
     auth.createUserWithEmailAndPassword(this.state.email, this.state.password).then(() => {
@@ -51,16 +39,26 @@ export default class SignUp extends Component {
   render() {
     return (
       <View style={styles.main}>
-        <Text>SignUp Screen:</Text>
+        <Text style={styles.title}>Sign Up:</Text>
         <Text style={styles.title}>Email:</Text>
-        <TextInput style={styles.itemInput} onChange={this.handleChange1} />
+        <TextInput 
+          style={styles.itemInput} 
+          onChangeText={(email) => this.setState({email})} 
+          selectionColor={"purple"}
+        />
 
         <Text style={styles.title}>Pass:</Text>
-        <TextInput secureTextEntry={true} style={styles.itemInput} onChange={this.handleChange2} />
+        <TextInput
+          secureTextEntry={true} 
+          style={styles.itemInput} 
+          onChangeText={(password) => this.setState({password})}
+          selectionColor={"purple"}
+        />
 
         <TouchableHighlight
           style={styles.button}
-          onPress={this.handleSubmit}>
+          onPress={this.handleSubmit}
+          underlayColor={"lavender"}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableHighlight>
       </View>

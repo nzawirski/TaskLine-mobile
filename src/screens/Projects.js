@@ -3,44 +3,46 @@ import {
   View,
   Text,
   TouchableHighlight,
-  StyleSheet,
-  TextInput,
 } from 'react-native';
 
 import { styles } from '../styles';
-import { db } from '../config';
+import { auth } from '../config';
 import { firestore } from '../config';
-import {auth} from '../config';
+
 
 
 export default class Projects extends Component {
   state = {
-    name: ''
+    projects: []
   };
 
-  handleChange = e => {
-    this.setState({
-      name: e.nativeEvent.text
-    });
-  };
+  componentDidMount(){
+    firestore.collection("Projects").where("Users", "array-contains",auth.currentUser.uid).onSnapshot((projs)=>{
+    let projects=[];
+    projs.forEach((doc)=>projects.push(doc.data().Name));
+    this.setState({ projects });
+  })
+    
+  }
+
   handleSubmit = () => {
     addItem(this.state.name);
   };
-  handleDel = () => {
-    delItem(this.state.name);
-  };
 
   render() {
+    let projs = [];
+    this.state.projects.forEach((i)=>projs.push(<Text>{i}</Text>));
+
+  
     return (
       <View style={{flex: 1}}>
-        <View style={styles.projectsView}>
-          <Text style={styles.title}>Projects</Text>
-          <Text>TODO: show projects</Text>
-        </View>
-        <View style={styles.main}>
+      <View style={{flex: 1}}><Text style={styles.title}>Projects:</Text></View>
+        <View style={styles.projectsView}>{projs}</View>
+        <View style={styles.purple}>
         <TouchableHighlight
-          style={styles.button}
-          onPress={() => this.props.navigation.navigate('AddProjectScreen')}>
+          style={styles.button2}
+          onPress={() => this.props.navigation.navigate('AddProjectScreen')}
+          underlayColor={"lavender"}>
           <Text style={styles.buttonText}>Add project</Text>
         </TouchableHighlight>
         </View>

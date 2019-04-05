@@ -12,15 +12,31 @@ import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
 
+const AuthStack = createStackNavigator({
+  Login: Login,
+  SignUp: SignUp,
+}, {
+  headerMode: 'none',
+});
+
+
+const ProjectsStack = createStackNavigator({
+  Projects: Projects,
+  AddProjectScreen: AddProjectScreen
+}, {
+  mode: 'modal',
+  headerMode: 'none',
+})
+
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,
-  Projects: Projects,
+  Projects: ProjectsStack,
   Timeline: Timeline,
   Options: Options
 }, {
     tabBarOptions: {
-      activeTintColor: '#000',
-      inactiveTintColor: 'gray',
+      activeTintColor: 'purple',
+      inactiveTintColor: 'mediumpurple',
       labelStyle: {
         fontSize: 12,
       },
@@ -28,27 +44,16 @@ const AppNavigator = createMaterialTopTabNavigator({
         backgroundColor: '#fff',
       },
       indicatorStyle: {
-        backgroundColor: '#000',
+        backgroundColor: 'purple',
       },
     }
   });
-
-const AuthStack = createStackNavigator({
-  Login: Login,
-  SignUp: SignUp,
-});
-
-const ProjectStack = createStackNavigator({
-  Projects: Projects,
-  AddProjectScreen: AddProjectScreen
-})
 
 const AppContainer = createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
     App: AppNavigator,
     Auth: AuthStack,
-    ProjectStack: ProjectStack
   },
   {
     initialRouteName: 'AuthLoading',

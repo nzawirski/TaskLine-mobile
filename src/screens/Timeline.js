@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ItemComponent from '../components/ItemComponent';
+import { styles } from '../styles';
 
-import { db } from '../config';
-
-let itemsRef = db.ref('/items');
-
-export default class List extends Component {
+export default class Timeline extends Component {
   state = {
     items: []
   };
@@ -17,7 +14,7 @@ export default class List extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.projectsView}>
         {this.state.items.length > 0 ? (
           <ItemComponent items={this.state.items} />
         ) : (
@@ -27,11 +24,3 @@ export default class List extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ebebeb'
-  }
-});

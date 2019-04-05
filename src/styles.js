@@ -6,14 +6,21 @@ export const styles = StyleSheet.create({
       padding: 30,
       flexDirection: 'column',
       justifyContent: 'center',
-      backgroundColor: '#6565fc',
+      backgroundColor: '#fff',
+    },
+    purple: {
+      flex: 1,
+      padding: 30,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      backgroundColor: 'mediumpurple',
     },
     projectsView: {
       flex: 4,
       padding: 30,
       flexDirection: 'column',
       justifyContent: 'center',
-      backgroundColor: '#e0ebfc',
+      backgroundColor: '#fff',
     },
     title: {
       marginBottom: 20,
@@ -26,9 +33,10 @@ export const styles = StyleSheet.create({
       marginRight: 5,
       fontSize: 23,
       borderWidth: 1,
-      borderColor: 'white',
+      borderColor: 'purple',
       borderRadius: 8,
-      color: 'white'
+      color: 'purple',
+      
     },
     buttonText: {
       fontSize: 18,
@@ -38,7 +46,7 @@ export const styles = StyleSheet.create({
     button: {
       height: 45,
       flexDirection: 'row',
-      backgroundColor: 'white',
+      backgroundColor: 'mediumpurple',
       borderColor: 'white',
       borderWidth: 1,
       borderRadius: 8,
@@ -50,7 +58,7 @@ export const styles = StyleSheet.create({
     button2: {
       height: 45,
       flexDirection: 'row',
-      backgroundColor: 'yellow',
+      backgroundColor: 'white',
       borderColor: 'white',
       borderWidth: 1,
       borderRadius: 8,
