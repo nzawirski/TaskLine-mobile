@@ -31,7 +31,7 @@ const ProjectsStack = createStackNavigator({
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,
   Projects: ProjectsStack,
-  Timeline: Timeline,
+  Taskline: Timeline,
   Options: Options
 }, {
     tabBarOptions: {
