@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableHighlight } from 'react-native';
+import { View, Text, TouchableHighlight, Image } from 'react-native';
 import DisplayUserName from '../components/DisplayUserName';
 
 import { styles } from '../styles';
 import { auth } from '../config';
+import { firestore } from '../config';
 
 export default class Home extends Component {
 
@@ -16,11 +17,33 @@ export default class Home extends Component {
     }
   }
 
+  state = {
+    nick: "",
+    icon: "",
+  };
+
+  componentDidMount(){
+    firestore.collection("Users").doc(auth.currentUser.uid).onSnapshot((doc)=>{
+    this.setState({ 
+      nick: doc.data().nick,
+      email: doc.data().email,
+      icon: doc.data().icon,
+    });
+  })
+  }
+
   render() {
     return (
       <View style={{flex:1}}>
         <View style={styles.projectsView}>
-          <DisplayUserName></DisplayUserName>
+          <Text style={styles.title}> Welcome {this.state.nick} !</Text>
+          
+          < Image
+            style={{width: 100, height: 100, justifyContent: "center", alignItems: "center"}}
+            source={{uri: this.state.icon}}
+          />
+
+          <Text> Email: {this.state.email}</Text> 
           <TouchableHighlight
             style={styles.button}
             onPress={this.logOut}
@@ -28,7 +51,7 @@ export default class Home extends Component {
             <Text  style={styles.buttonText}>Log Out</Text>
           </TouchableHighlight>
         </View>
-        <View style={{flex:16, backgroundColor: "mediumpurple"}}>
+        <View style={{flex:4, backgroundColor: "mediumpurple"}}>
         </View>
       </View>
     );

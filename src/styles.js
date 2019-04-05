@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
       padding: 30,
       flexDirection: 'column',
       justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: '#fff',
     },
     title: {
@@ -35,6 +36,7 @@ export const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: 'purple',
       borderRadius: 8,
+      alignSelf: 'stretch',
       color: 'purple',
       
     },

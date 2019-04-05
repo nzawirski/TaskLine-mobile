@@ -22,7 +22,6 @@ export default class Projects extends Component {
     projs.forEach((doc)=>projects.push(doc.data().Name));
     this.setState({ projects });
   })
-    
   }
 
   handleSubmit = () => {
