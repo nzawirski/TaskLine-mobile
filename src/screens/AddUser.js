@@ -15,18 +15,31 @@ export default class AddUser extends Component {
     umail: ''
   };
 
-  handleSubmit = () => {
-    const { navigation } = this.props;
-    const projectId = navigation.getParam('projectId', null);
-    let uid = "";
-    firestore.collection("Users").where("email","==",this.state.umail).get().then((doc)=>{
-        uid = doc.id;
-    }).then(()=>{
-        firestore.collection("Projects").doc(projectId).update({
-            Users: firestore.FieldValue.arrayUnion(uid),
+    handleSubmit = () => {
+        const { navigation } = this.props;
+        const projectId = navigation.getParam('projectId', null);
+
+        let uid = "";
+        let users = [];
+
+        firestore.collection("Users").where("email","==",this.state.umail).get().then((snap)=>{
+            snap.forEach((doc)=>{
+                uid = doc.id;
+            })
+        }).then(()=> {
+
+            firestore.collection("Projects").doc(projectId).get().then((doc2)=>{
+                    users = doc2.data().Users;
+                    users.push(uid);
+                
+            }).then(()=> {
+                firestore.collection("Projects").doc(projectId).update({
+                    Users: users,
+                })
+            });
         })
-    })
-  };
+        
+    };
 
   render() {
     return (

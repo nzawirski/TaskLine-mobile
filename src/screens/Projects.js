@@ -15,7 +15,7 @@ import { firestore } from '../config';
 
 export default class Projects extends Component {
   state = {
-    projects: []
+    projects: [],
   };
 
   componentDidMount(){
@@ -26,10 +26,11 @@ export default class Projects extends Component {
   })
   }
 
+
+
   render() {
     let projs = [];
     this.state.projects.forEach((i)=>projs.push(<ProjectItem projectId={i[0]} projectName={i[1]}></ProjectItem>));
-
   
     return (
       <View style={{flex: 1}}>
