@@ -18,11 +18,14 @@ export default class AddTask extends Component {
   handleSubmit = () => {
     const { navigation } = this.props;
     const projectId = navigation.getParam('projectId', null);
+    // todo: due date and users
     firestore.collection("Tasks").add({
       Name: this.state.taskName,
-      Date: new Date(),
+      DateAdded: new Date(),
+      DueDate: new Date(),
       ProjectId: projectId,
       Users: [auth.currentUser.uid],
+      AddedBy: auth.currentUser.uid
     }).then(()=>this.props.navigation.goBack())
   };
 

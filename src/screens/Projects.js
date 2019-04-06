@@ -8,8 +8,7 @@ import {
 import ProjectItem from '../components/ProjectItem';
 
 import { styles } from '../styles';
-import { auth } from '../config';
-import { firestore } from '../config';
+import { auth, firestore } from '../config';
 
 
 
