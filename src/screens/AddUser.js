@@ -19,11 +19,14 @@ export default class AddUser extends Component {
     const { navigation } = this.props;
     const projectId = navigation.getParam('projectId', null);
     let uid = "";
-    firestore.collection("Users").where("email","==",this.state.umail).get().then((doc)=>{
+    firestore.collection("Users").where("email","==",this.state.umail).get().then((querySnapshot)=>{
+      querySnapshot.forEach(function(doc){
         uid = doc.id;
+      })
     }).then(()=>{
+      //this still doesn't work
         firestore.collection("Projects").doc(projectId).update({
-            Users: firestore.FieldValue.arrayUnion(uid),
+            Users: admin.firestore.FieldValue.arrayUnion(uid)
         })
     })
   };
