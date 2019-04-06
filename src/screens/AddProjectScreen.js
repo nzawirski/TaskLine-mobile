@@ -19,8 +19,7 @@ export default class AddProjectScreen extends Component {
     firestore.collection("Projects").add({
       Name: this.state.projectName,
       Date: new Date(),
-      Users: [auth.currentUser.uid],
-      Tasks: [],
+      Users: [auth.currentUser.uid]
     }).then(()=>this.props.navigation.goBack())
   };
 
