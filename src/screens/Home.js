@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableHighlight, Image, ScrollView } from 'react-native';
-import DisplayUserName from '../components/DisplayUserName';
-import ProjectItem from '../components/ProjectItem';
+import ChangeLogItem from '../components/ChangeLogItem';
 
 import { styles } from '../styles';
 import { auth } from '../config';
@@ -43,7 +42,7 @@ export default class Home extends Component {
   render() {
 
     let msgs = [];
-    this.state.msgs.forEach((i)=>msgs.push(<ProjectItem projectName={i}></ProjectItem>));
+    this.state.msgs.forEach((i)=>msgs.push(<ChangeLogItem msg={i}></ChangeLogItem>));
 
     return (
       <View style={{flex:1}}>

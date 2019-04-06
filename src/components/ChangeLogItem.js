@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { withNavigation } from 'react-navigation';
 
-class ProjectItem extends React.Component {
+export default class ChangeLogItem extends Component {
 
   render() {
     return (
-        <TouchableOpacity 
-        style={styles.box} 
-        onPress={() => {this.props.navigation.navigate('Board', {projectId: this.props.projectId})}}>
-        <View style={styles.mark}><Text>{this.props.projectName}</Text>
-        </View>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.box}><View style={styles.mark}><Text>{this.props.msg}</Text></View></TouchableOpacity>
     );
   }
 };
@@ -29,5 +23,3 @@ const styles = StyleSheet.create({
         
     },
 })
-
-export default withNavigation(ProjectItem);

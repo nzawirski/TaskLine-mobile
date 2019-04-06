@@ -21,18 +21,14 @@ export default class Projects extends Component {
   componentDidMount(){
     firestore.collection("Projects").where("Users", "array-contains",auth.currentUser.uid).onSnapshot((projs)=>{
     let projects=[];
-    projs.forEach((doc)=>projects.push(doc.data().Name));
+    projs.forEach((doc)=>projects.push([doc.id, doc.data().Name]));
     this.setState({ projects });
   })
   }
 
-  handleSubmit = () => {
-    addItem(this.state.name);
-  };
-
   render() {
     let projs = [];
-    this.state.projects.forEach((i)=>projs.push(<ProjectItem projectName={i}></ProjectItem>));
+    this.state.projects.forEach((i)=>projs.push(<ProjectItem projectId={i[0]} projectName={i[1]}></ProjectItem>));
 
   
     return (

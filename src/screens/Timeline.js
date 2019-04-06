@@ -15,11 +15,6 @@ export default class Timeline extends Component {
   render() {
     return (
       <View style={styles.projectsView}>
-        {this.state.items.length > 0 ? (
-          <ItemComponent items={this.state.items} />
-        ) : (
-          <Text>No items</Text>
-        )}
       </View>
     );
   }

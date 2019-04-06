@@ -11,8 +11,9 @@ export const styles = StyleSheet.create({
     purple: {
       flex: 1,
       padding: 30,
-      flexDirection: 'column',
+      flexDirection: 'row',
       justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: 'mediumpurple',
     },
     projectsView: {
@@ -65,8 +66,8 @@ export const styles = StyleSheet.create({
       borderColor: 'white',
       borderWidth: 1,
       borderRadius: 8,
-      marginBottom: 10,
-      marginTop: 10,
+      margin: 10,
+      padding: 10,
       alignSelf: 'stretch',
       justifyContent: 'center'
     }
