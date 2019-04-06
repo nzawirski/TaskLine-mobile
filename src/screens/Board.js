@@ -51,7 +51,7 @@ export default class Board extends Component {
     this.state.users.forEach((i)=>{userList.push(<Text>U: {i}</Text>)})
 
     let taskList = [];
-    this.state.tasks.forEach((i)=>{taskList.push(<TaskItem taskName={i[1]}></TaskItem>)})
+    this.state.tasks.forEach((i)=>{taskList.push(<TaskItem taskName={i[1]} addedBy={i[4]} dateAdded={i[2]}></TaskItem>)})
 
     return (
       <View style={{flex: 1}}>
