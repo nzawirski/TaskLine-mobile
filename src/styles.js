@@ -66,8 +66,8 @@ export const styles = StyleSheet.create({
       borderColor: 'white',
       borderWidth: 1,
       borderRadius: 8,
-      margin: 10,
-      padding: 10,
+      marginHorizontal: 25,
+      paddingHorizontal: 25,
       alignSelf: 'stretch',
       justifyContent: 'center'
     }
