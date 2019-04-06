@@ -32,7 +32,7 @@ export default class Board extends Component {
       this.setState({ users: doc.data().Users});
     })
 
-    firestore.collection("Tasks").where("ProjectId", "==", projectId).onSnapshot((doc)=>{
+    firestore.collection("Tasks").where("ProjectId", "==", projectId).orderBy("DateAdded").get().then((doc)=>{
       let tasks=[];
       doc.forEach((task)=>tasks.push([task.id, 
         task.data().Name, 
@@ -42,6 +42,8 @@ export default class Board extends Component {
         task.data().Users
         ]));
       this.setState({ tasks: tasks })
+    }).catch(error => {
+      console.error("could not fetch tasks", error);
     })
   }
 
