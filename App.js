@@ -10,6 +10,7 @@ import Board from './src/screens/Board';
 import AddProjectScreen from './src/screens/AddProjectScreen';
 import AddTask from './src/screens/AddTask';
 import AddUser from './src/screens/AddUser';
+import TaskScreen from './src/screens/TaskScreen';
 
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import Login from './src/screens/Login';
@@ -28,6 +29,7 @@ const BoardStack = createStackNavigator({
   Board: Board,
   AddTask: AddTask,
   AddUser: AddUser,
+  TaskScreen: TaskScreen
 }, {
   mode: 'modal',
   headerMode: 'none',
@@ -41,8 +43,6 @@ const ProjectsStack = createStackNavigator({
   mode: 'modal',
   headerMode: 'none',
 })
-
-
 
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,

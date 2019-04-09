@@ -24,6 +24,7 @@ class TaskItem extends React.Component {
     return (
       <TouchableOpacity
         style={styles.box}
+        onPress={() => {this.props.navigation.navigate('TaskScreen', {taskId: this.props.TaskId})}}
       >
         <View style={styles.mark}>
           <Text>{this.props.TaskName}</Text>
