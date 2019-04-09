@@ -12,9 +12,24 @@ class TaskItem extends React.Component {
   }
 
   componentDidMount() {
-    firestore.collection('Users').doc(this.props.AddedBy).onSnapshot((doc)=> {
-      this.setState({ user: doc.data().nick });
-    })
+    //if AddedBy is empty don't even bother
+    if(!this.props.AddedBy){
+      this.setState({ user: "unknown" })
+      return null;
+    }
+    //try to get user name
+    firestore.collection('Users').doc(this.props.AddedBy).onSnapshot((doc) => {
+      if (doc.exists) {
+        //user name found
+        this.setState({ user: doc.data().nick });
+      }else{
+        //couldn't find the name
+        this.setState({ user: "unknown" })
+      }
+    }), function (error) {
+      //we probably never get to this block but who knows
+      this.setState({ user: "unknown" })
+    }
   }
 
   render() {
@@ -24,12 +39,12 @@ class TaskItem extends React.Component {
     return (
       <TouchableOpacity
         style={styles.box}
-        onPress={() => {this.props.navigation.navigate('TaskScreen', {taskId: this.props.TaskId})}}
+        onPress={() => { this.props.navigation.navigate('TaskScreen', { taskId: this.props.TaskId }) }}
       >
         <View style={styles.mark}>
           <Text>{this.props.TaskName}</Text>
           <Text>added by: {this.state.user} {moment(dateAdded).fromNow()} {"\n"}
-          Due Date {moment(dueDate).format('LLL')} ({moment(dueDate).fromNow()})</Text>
+            Due Date {moment(dueDate).format('LLL')} ({moment(dueDate).fromNow()})</Text>
         </View>
       </TouchableOpacity>
     );
