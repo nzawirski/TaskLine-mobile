@@ -3,7 +3,7 @@ import { createSwitchNavigator, createStackNavigator, createAppContainer, create
 
 import Home from './src/screens/Home';
 import Projects from './src/screens/Projects';
-import Timeline from './src/screens/Timeline';
+import Taskline from './src/screens/Taskline';
 import Options from './src/screens/Options';
 
 import Board from './src/screens/Board';
@@ -47,7 +47,7 @@ const ProjectsStack = createStackNavigator({
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,
   Projects: ProjectsStack,
-  Taskline: Timeline,
+  Taskline: Taskline,
   Options: Options
 }, {
     tabBarOptions: {

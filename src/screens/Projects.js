@@ -33,16 +33,16 @@ export default class Projects extends Component {
   
     return (
       <View style={{flex: 1}}>
-      <View style={{flex: 1}}><Text style={styles.title}>Projects:</Text></View>
+        <View style={{flex: 1}}><Text style={styles.title}>Projects:</Text></View>
 
-      <View style={{flex: 5}}><ScrollView>{projs}</ScrollView></View>
-        <View style={styles.purple}>
-        <TouchableHighlight
-          style={styles.button2}
-          onPress={() => this.props.navigation.navigate('AddProjectScreen')}
-          underlayColor={"lavender"}>
-          <Text style={styles.buttonText}>Add project</Text>
-        </TouchableHighlight>
+        <View style={{flex: 8}}><ScrollView>{projs}</ScrollView></View>
+          <View style={styles.purple}>
+          <TouchableHighlight
+            style={styles.button2}
+            onPress={() => this.props.navigation.navigate('AddProjectScreen')}
+            underlayColor={"lavender"}>
+            <Text style={styles.buttonText}>Add project</Text>
+          </TouchableHighlight>
         </View>
       </View>
     );

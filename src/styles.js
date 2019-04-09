@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     },
     purple: {
       flex: 1,
-      padding: 30,
+      padding: 10,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
