@@ -18,8 +18,8 @@ class TaskItem extends React.Component {
   }
 
   render() {
-    let dateAdded = new Date(this.props.DateAdded.seconds.toString() * 1000);
-    let dueDate = new Date(this.props.DueDate.seconds.toString() * 1000);
+    let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
+    let dueDate = new Date(this.props.DueDate.seconds * 1000);
 
     return (
       <TouchableOpacity
