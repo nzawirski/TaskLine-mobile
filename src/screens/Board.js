@@ -32,7 +32,7 @@ export default class Board extends Component {
       this.setState({ users: doc.data().Users });
     })
 
-    firestore.collection("Tasks").where("ProjectId", "==", projectId).orderBy("DateAdded", "desc").onSnapshot((doc) => {
+    firestore.collection("Tasks").where("ProjectId", "==", projectId).orderBy("DueDate", "desc").onSnapshot((doc) => {
       let tasks = [];
       doc.forEach((task) => tasks.push([task.id,
       task.data().Name,
@@ -51,7 +51,14 @@ export default class Board extends Component {
     this.state.users.forEach((i) => { userList.push(<Text>U: {i}</Text>) })
 
     let taskList = [];
-    this.state.tasks.forEach((i) => { taskList.push(<TaskItem taskName={i[1]} addedBy={i[4]} dateAdded={i[2]}></TaskItem>) })
+    this.state.tasks.forEach((i) => { 
+      taskList.push(<TaskItem 
+        TaskName={i[1]} 
+        AddedBy={i[4]} 
+        DateAdded={i[2]}
+        DueDate={i[3]}
+        ></TaskItem>) 
+    })
 
     return (
       <View style={{ flex: 1 }}>

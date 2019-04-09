@@ -70,5 +70,16 @@ export const styles = StyleSheet.create({
       paddingHorizontal: 25,
       alignSelf: 'stretch',
       justifyContent: 'center'
-    }
+    },
+    buttonPale: {
+      height: 45,
+      flexDirection: 'row',
+      backgroundColor: 'lavender',
+      borderColor: 'white',
+      borderWidth: 1,
+      borderRadius: 8,
+      marginBottom: 10,
+      alignSelf: 'stretch',
+      justifyContent: 'center'
+    },
   });
