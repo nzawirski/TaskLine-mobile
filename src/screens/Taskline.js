@@ -31,6 +31,7 @@ export default class Taskline extends Component {
   render() {
     let taskLine = [];
     let colorNumber = 12;
+    let isLate = 0;
 
     this.state.tasks.forEach((i) => { 
 
@@ -40,6 +41,7 @@ export default class Taskline extends Component {
 
       if(dueDate<today){
         colorNumber=0;
+        isLate+=1;
       } else {
         if((dueDate-today)>12096000000){
           colorNumber=12;
@@ -69,7 +71,7 @@ export default class Taskline extends Component {
 
       }
 
-      taskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={this.state.colors[colorNumber]}></TasklineItem>); 
+      taskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={this.state.colors[colorNumber]} lateTask={isLate}></TasklineItem>); 
       
     })
 

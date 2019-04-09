@@ -7,15 +7,25 @@ class TasklineItem extends React.Component {
 
 
     render() {
-
-    return (
-        <View style={styles.box}>
-            <View style={styles.disp}><Text style={styles.text}>{this.props.taskName}</Text></View>
-            <View style={[styles.middle, {backgroundColor: this.props.taskColor,}]}></View>
-            <View style={styles.disp}><Text style={styles.text}>{this.props.taskDue}</Text></View>
-        </View>
-    );
+    if(this.props.lateTask==1){
+        return (
+            <View style={styles.box}>
+                <View style={[styles.disp, {borderTopColor: "black", borderTopWidth: 2}]}><Text style={styles.text}>{this.props.taskName}</Text></View>
+                <View style={[styles.middle, {backgroundColor: this.props.taskColor,}]}></View>
+                <View style={[styles.disp, {borderTopColor: "black", borderTopWidth: 2}]}><Text style={styles.text}>{this.props.taskDue}</Text></View>
+            </View>
+        );
+    } else {
+        return (
+            <View style={styles.box}>
+                <View style={styles.disp}><Text style={styles.text}>{this.props.taskName}</Text></View>
+                <View style={[styles.middle, {backgroundColor: this.props.taskColor,}]}></View>
+                <View style={styles.disp}><Text style={styles.text}>{this.props.taskDue}</Text></View>
+            </View>
+        );
+    }
   }
+
 };
 
 const styles = StyleSheet.create({
