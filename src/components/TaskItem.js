@@ -13,7 +13,7 @@ class TaskItem extends React.Component {
 
   componentDidMount() {
     //if AddedBy is empty don't even bother
-    if(!this.props.AddedBy){
+    if (!this.props.AddedBy) {
       this.setState({ user: "unknown" })
       return null;
     }
@@ -22,7 +22,7 @@ class TaskItem extends React.Component {
       if (doc.exists) {
         //user name found
         this.setState({ user: doc.data().nick });
-      }else{
+      } else {
         //couldn't find the name
         this.setState({ user: "unknown" })
       }
@@ -31,6 +31,11 @@ class TaskItem extends React.Component {
       this.setState({ user: "unknown" })
     }
   }
+
+  componentDidUpdate = () => {
+    //RELOAD COMPONENT
+    this.componentDidMount();
+  };
 
   render() {
     let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
