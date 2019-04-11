@@ -12,7 +12,6 @@ class TaskItem extends React.Component {
   }
 
   getName() {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>> getName() called")
     //if AddedBy is empty don't even bother
     if (!this.props.AddedBy) {
       this.setState({ user: "unknown" })
@@ -36,6 +35,15 @@ class TaskItem extends React.Component {
   componentDidMount() {
     this.getName();
   }
+
+  componentWillReceiveProps = () => {
+    //wait 100ms for item to realise userId has changed
+    setTimeout(() => {
+      this.getName();
+    },100)
+    
+  };
+  
 
   render() {
     let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
