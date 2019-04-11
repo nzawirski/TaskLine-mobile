@@ -31,6 +31,8 @@ export default class Board extends Component {
 
     firestore.collection("Tasks").where("ProjectId", "==", projectId).orderBy("DueDate", "desc").onSnapshot((doc) => {
       let tasks = [];
+      console.log(">>>>>>>>>>>>>>>>>>>>>>> received snapshot")
+      //When we recieve snapshot we need to force call getName() in every child TaskItem
       doc.forEach((task) => tasks.push([task.id,
       task.data().Name,
       task.data().DateAdded,
