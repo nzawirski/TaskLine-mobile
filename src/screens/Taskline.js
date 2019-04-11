@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { styles } from '../styles';
 
 import TasklineItem from '../components/TasklineItem';
@@ -12,11 +12,11 @@ import 'moment/locale/en-gb'
 export default class Taskline extends Component {
   state = {
     tasks: [],
-    colors: ["#000000", "#ff0000", "#fb2e05", "#f7590a", "#f2810f", "#eea514", "#eac718", "#e6e61d", "#c1e121", "#a0dd25", "#81d929", "#64d42c", "#4ad030",],
+    swap: false,
   }
 
   componentDidMount() {
-    firestore.collection("Tasks").where("Users", "array-contains", auth.currentUser.uid).orderBy("DueDate", "desc").onSnapshot((doc) => {
+    firestore.collection("Tasks").where("Users", "array-contains", auth.currentUser.uid).orderBy("DueDate", "asc").onSnapshot((doc) => {
       let tasks = [];
       doc.forEach((task) => tasks.push([task.id,
       task.data().Name,
@@ -29,57 +29,43 @@ export default class Taskline extends Component {
   }
 
   render() {
-    let taskLine = [];
-    let colorNumber = 12;
-    let isLate = 0;
+    let oldTaskLine = [];
+    let goodTaskLine = [];
+    let colorCode = "";
 
     this.state.tasks.forEach((i) => { 
 
       let today = new Date();
       let dueDate = new Date(i[3].seconds * 1000);
       let dD = moment(dueDate).fromNow();
+      let dT = Math.round(((dueDate-today)/100000/24192)*510);
+      let red = (510-dT) > 255 ? red = 255 : red = (510-dT);
+      let green = (0+dT) > 255 ? green = 255 : green = (0+dT);
 
       if(dueDate<today){
-        colorNumber=0;
-        isLate+=1;
+        colorCode="rgb(0, 0, 0)";
+        oldTaskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>); 
       } else {
-        if((dueDate-today)>12096000000){
-          colorNumber=12;
-        } else if((dueDate-today)>2332800000){
-          colorNumber=11;
-        } else if((dueDate-today)>2073600000){
-          colorNumber=10;
-        } else if((dueDate-today)>1555200000){
-          colorNumber=9;
-        } else if((dueDate-today)>1209600000){
-          colorNumber=8;
-        } else if((dueDate-today)>864000000){
-          colorNumber=7;
-        } else if((dueDate-today)>604800000){
-          colorNumber=6;
-        } else if((dueDate-today)>432000000){
-          colorNumber=5;
-        } else if((dueDate-today)>259200000){
-          colorNumber=4;
-        } else if((dueDate-today)>172800000){
-          colorNumber=3;
-        } else if((dueDate-today)>86400000){
-          colorNumber=2;
-        } else {
-          colorNumber=1;
-        }
-
-      }
-
-      taskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={this.state.colors[colorNumber]} lateTask={isLate}></TasklineItem>); 
-      
+       colorCode="rgb("+red.toString()+", "+green.toString()+", 0)";
+       goodTaskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>); 
+      } 
     })
 
     return (
-      <View>
-        <ScrollView>
-          {taskLine}
-        </ScrollView>
+      <View style={{flex: 1}}>
+        <View style={{flex: 10}}>
+        {this.state.swap ?
+          <ScrollView>
+            {oldTaskLine}
+          </ScrollView> : 
+          <ScrollView>
+            {goodTaskLine}
+          </ScrollView>}
+        </View>
+        <View style={styles.purple}>
+          <TouchableOpacity onPress={()=>{this.setState({swap:false})}} style={styles.button2}><Text>Current</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=>{this.setState({swap:true})}} style={styles.button2}><Text>Completed</Text></TouchableOpacity>
+        </View>
       </View>
       
     );
