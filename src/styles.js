@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+
 export const styles = StyleSheet.create({
     main: {
       flex: 1,
@@ -81,5 +82,13 @@ export const styles = StyleSheet.create({
       marginBottom: 10,
       alignSelf: 'stretch',
       justifyContent: 'center'
+    },
+
+    scroll: {
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      flexWrap:'wrap'
+  
     },
   });

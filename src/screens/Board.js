@@ -50,13 +50,27 @@ export default class Board extends Component {
     this.state.users.forEach((i) => { userList.push(<Text>U: {i}</Text>) })
 
     let taskList = [];
-    this.state.tasks.forEach((i) => { 
+    this.state.tasks.forEach((i) => {
+      
+      let today = new Date();
+      let dueDate = new Date(i[3].seconds * 1000);
+      let dT = Math.round(((dueDate-today)/100000/24192)*510);
+      let red = (510-dT) > 255 ? red = 255 : red = (510-dT);
+      let green = (0+dT) > 255 ? green = 255 : green = (0+dT);
+
+      if(dueDate<today){
+        colorCode="rgb(0, 0, 0)";
+      } else {
+        colorCode="rgb("+red.toString()+", "+green.toString()+", 0)";
+      }
+      
       taskList.push(<TaskItem 
         TaskId={i[0]}
         TaskName={i[1]} 
         DateAdded={i[2]}
         DueDate={i[3]}
         AddedBy={i[4]}
+        taskColor={colorCode}
         ></TaskItem>) 
     })
 
@@ -65,7 +79,7 @@ export default class Board extends Component {
         <View style={{ flex: 9, }}>
           <Text style={styles.title}>Project {this.state.projectName}</Text>
           {userList}
-          <ScrollView>{taskList}</ScrollView>
+          <ScrollView contentContainerStyle={styles.scroll}>{taskList}</ScrollView>
 
         </View>
 

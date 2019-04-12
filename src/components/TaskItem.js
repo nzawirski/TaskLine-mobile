@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { firestore } from '../config';
 import moment from 'moment';
 import 'moment/locale/en-gb'
+
+var width = Dimensions.get('window').width;
 
 class TaskItem extends React.Component {
 
@@ -54,10 +56,10 @@ class TaskItem extends React.Component {
         style={styles.box}
         onPress={() => { this.props.navigation.navigate('TaskScreen', { taskId: this.props.TaskId }) }}
       >
-        <View style={styles.mark}>
+        <View style={[styles.mark, {borderBottomColor: this.props.taskColor,}]}>
           <Text>{this.props.TaskName}</Text>
-          <Text>added by: {this.state.user} {moment(dateAdded).fromNow()} {"\n"}
-            Due Date {moment(dueDate).format('LLL')} ({moment(dueDate).fromNow()})</Text>
+          <Text>Added by: {this.state.user}{"\n"}({moment(dateAdded).fromNow()})</Text>
+          <Text>Due Date:{"\n"}{moment(dueDate).format('LLL')}{"\n"}({moment(dueDate).fromNow()})</Text>
         </View>
       </TouchableOpacity>
     );
@@ -66,15 +68,19 @@ class TaskItem extends React.Component {
 
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: "#e9e9e9",
-    alignSelf: "stretch",
-    marginBottom: 10,
+    width: width/2.2,
+    height: width/2.2,
+    margin: width/45,
+    padding: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#484a4c',
   },
   mark: {
-    borderLeftColor: "mediumpurple",
-    borderLeftWidth: 5,
+    borderBottomWidth: 5,
     padding: 10,
-
+    flex: 1,
   },
   title: {
     fontWeight: 'bold'
