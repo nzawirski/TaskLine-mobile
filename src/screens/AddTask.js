@@ -41,11 +41,13 @@ export default class AddTask extends Component {
     // todo: assigning users
     firestore.collection("Tasks").add({
       Name: this.state.taskName,
+      Description: "",
       DateAdded: new Date(),
       DueDate: this.state.dueDate,
       ProjectId: projectId,
       Users: [auth.currentUser.uid],
-      AddedBy: auth.currentUser.uid
+      AddedBy: auth.currentUser.uid,
+      isCompleted: false
     }).then(() => this.props.navigation.goBack())
   };
 
