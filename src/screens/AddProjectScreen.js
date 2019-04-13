@@ -8,8 +8,9 @@ import {
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { ThemeProvider } from 'react-native-elements';
 
-import { styles } from '../styles';
+import { styles, theme } from '../styles';
 import { firestore } from '../config';
 import { auth } from '../config';
 import UserItem from '../components/UserItem'
@@ -45,54 +46,63 @@ export default class AddProjectScreen extends Component {
     this.state.allUsers.forEach((i) => {
       userList.push(<UserItem userId={i[0]} nick={i[1]}></UserItem>)
     });
-    console.log(this.state.allUsers)
+
     return (
+      <ThemeProvider theme={theme}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, padding: 30 }}>
 
-      <View style={{ flex: 1 }}>
-        <View style={styles.projectsView}>
+            <Input
+              label="Project name"
+              onChangeText={(projectName) => this.setState({ projectName })}
+              selectionColor={"purple"}
+            />
 
-          <Input
-            label="Project name"
-            onChangeText={(projectName) => this.setState({ projectName })}
-            selectionColor={"purple"}
-          />
+            <Input
+              label="Add collaborators"
+              onChangeText={(projectName) => this.setState({ projectName })}
+              selectionColor={"purple"}
+            />
 
-          <Input
-            label="Add collaborators"
-            onChangeText={(projectName) => this.setState({ projectName })}
-            selectionColor={"purple"}
-          />
+            <View style={{ flex: 1, marginVertical: 5 }}><ScrollView>{userList}</ScrollView></View>
 
-          <View style={{ flex: 1 }}><ScrollView>{userList}</ScrollView></View>
+            <View style={styles.buttonContainer}>
 
-          <Button
-            icon={
-              <Icon
-                name="check-circle"
-                size={15}
-                color="white"
-              />
-            }
-            onPress={this.handleSubmit}
-            color="lavender"
-            title="Add Project">
-          </Button>
+              <Button
+                buttonStyle={{
+                  marginHorizontal: 10
+                }}
+                icon={
+                  <Icon
+                    name="window-close"
+                    size={15}
+                    color="white"
+                  />
+                }
+                onPress={() => this.props.navigation.goBack()}
+                title="Dismiss">
+              </Button>
 
-          <Button
-            icon={
-              <Icon
-                name="window-close"
-                size={15}
-                color="white"
-              />
-            }
-            onPress={() => this.props.navigation.goBack()}
-            color="lavender"
-            title="Dismiss">
-          </Button>
+              <Button
+                buttonStyle={{
+                  marginHorizontal: 10
+                }}
+                icon={
+                  <Icon
+                    name="check-circle"
+                    size={15}
+                    color="white"
+                  />
+                }
+                onPress={this.handleSubmit}
+                title="Add Project">
+              </Button>
+
+            </View>
+          </View>
 
         </View>
-      </View>
+      </ThemeProvider>
     );
   }
 }
