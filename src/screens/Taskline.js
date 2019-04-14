@@ -62,13 +62,13 @@ export default class Taskline extends Component {
       } else {
         isNotLate+=1;
         if (timeUntil < fourDays) {
-          red = (0 + timeNormalisedFourDays);
+          red = (510 - timeNormalisedFourDays);
           green = 0
-          blue = (510 - timeNormalisedFourDays) / 2;
-        } else {
-          red = (510 - timeNormalisedMonth);
+          blue = (0 + timeNormalisedFourDays) / 2;
+        } else {  
+          red = 0
           green = (0 + timeNormalisedMonth);
-          blue = 0
+          blue = (510 - timeNormalisedMonth);
         }
       }
       colorCode = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")";
