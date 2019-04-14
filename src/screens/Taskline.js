@@ -23,51 +23,80 @@ export default class Taskline extends Component {
       task.data().DateAdded,
       task.data().DueDate,
       task.data().AddedBy,
+      task.data().Description,
+      task.data().isCompleted
       ]));
       this.setState({ tasks })
     })
   }
 
   render() {
-    let oldTaskLine = [];
-    let goodTaskLine = [];
+    let completedLine = [];
+    let activeLine = [];
     let colorCode = "";
+    let isNotLate = 0;
+    this.state.tasks.forEach((i) => {
 
-    this.state.tasks.forEach((i) => { 
+      let isCompleted = i[6]
 
       let today = new Date();
       let dueDate = new Date(i[3].seconds * 1000);
-      let dD = moment(dueDate).fromNow();
-      let dT = Math.round(((dueDate-today)/100000/24192)*510);
-      let red = (510-dT) > 255 ? red = 255 : red = (510-dT);
-      let green = (0+dT) > 255 ? green = 255 : green = (0+dT);
 
-      if(dueDate<today){
-        colorCode="rgb(0, 0, 0)";
-        oldTaskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>); 
+      let fourDays = 1000 * 60 * 60 * 24 * 4
+      let month = 1000 * 60 * 60 * 24 * 28
+
+      let dD = moment(dueDate).fromNow();
+      let timeUntil = dueDate - today
+
+      let timeNormalisedMonth = Math.round(((timeUntil) / month) * 510);
+      let timeNormalisedFourDays = Math.round(((timeUntil) / fourDays) * 510);
+
+      let red
+      let green
+      let blue
+
+      if (dueDate < today) {
+        red = 0
+        green = 0
+        blue = 0
       } else {
-       colorCode="rgb("+red.toString()+", "+green.toString()+", 0)";
-       goodTaskLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>); 
-      } 
+        isNotLate+=1;
+        if (timeUntil < fourDays) {
+          red = (0 + timeNormalisedFourDays);
+          green = 0
+          blue = (510 - timeNormalisedFourDays) / 2;
+        } else {
+          red = (510 - timeNormalisedMonth);
+          green = (0 + timeNormalisedMonth);
+          blue = 0
+        }
+      }
+      colorCode = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")";
+
+      if (isCompleted) {
+        completedLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>);
+      } else {
+        activeLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode} isNotLate={isNotLate}></TasklineItem>);
+      }
     })
 
     return (
-      <View style={{flex: 1}}>
-        <View style={{flex: 10}}>
-        {this.state.swap ?
-          <ScrollView>
-            {oldTaskLine}
-          </ScrollView> : 
-          <ScrollView>
-            {goodTaskLine}
-          </ScrollView>}
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 10 }}>
+          {this.state.swap ?
+            <ScrollView>
+              {completedLine}
+            </ScrollView> :
+            <ScrollView>
+              {activeLine}
+            </ScrollView>}
         </View>
         <View style={styles.purple}>
-          <TouchableOpacity onPress={()=>{this.setState({swap:false})}} style={styles.button2}><Text>Current</Text></TouchableOpacity>
-          <TouchableOpacity onPress={()=>{this.setState({swap:true})}} style={styles.button2}><Text>Completed</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { this.setState({ swap: false }) }} style={styles.button2}><Text>Current</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { this.setState({ swap: true }) }} style={styles.button2}><Text>Completed</Text></TouchableOpacity>
         </View>
       </View>
-      
+
     );
   }
 }
