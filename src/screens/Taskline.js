@@ -34,7 +34,7 @@ export default class Taskline extends Component {
     let completedLine = [];
     let activeLine = [];
     let colorCode = "";
-
+    let isNotLate = 0;
     this.state.tasks.forEach((i) => {
 
       let isCompleted = i[6]
@@ -59,22 +59,24 @@ export default class Taskline extends Component {
         red = 0
         green = 0
         blue = 0
-      } else if (timeUntil < fourDays) {
-        red = (0 + timeNormalisedFourDays);
-        green = 0
-        blue = (510 - timeNormalisedFourDays)/2;
       } else {
-        red = (510 - timeNormalisedMonth);
-        green = (0 + timeNormalisedMonth);
-        blue = 0
+        isNotLate+=1;
+        if (timeUntil < fourDays) {
+          red = (0 + timeNormalisedFourDays);
+          green = 0
+          blue = (510 - timeNormalisedFourDays) / 2;
+        } else {
+          red = (510 - timeNormalisedMonth);
+          green = (0 + timeNormalisedMonth);
+          blue = 0
+        }
       }
-      
       colorCode = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")";
 
-      if (isCompleted) { 
+      if (isCompleted) {
         completedLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>);
       } else {
-        activeLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>);
+        activeLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode} isNotLate={isNotLate}></TasklineItem>);
       }
     })
 
