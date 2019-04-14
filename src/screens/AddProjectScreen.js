@@ -144,11 +144,17 @@ export default class AddProjectScreen extends Component {
         </View>
       );
     }
+ 
     let userList = this.state.allUsers;
-
+    if(this.state.userSearch!=""){
     userList = userList.filter((user) => {
-      return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
+      return user.isSelected == true || user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
     });
+    } else {
+      userList = userList.filter((user) => {
+        return user.isSelected == true;
+      });
+    }
 
 
     return (
@@ -167,8 +173,9 @@ export default class AddProjectScreen extends Component {
             selectionColor={"purple"}
             placeholder={"Search user name or email"}
           />
-
+          
           <View style={{ flex: 1, marginVertical: 5 }}>
+
             <FlatList
               data={userList}
               renderItem={({ item }) =>
@@ -180,6 +187,7 @@ export default class AddProjectScreen extends Component {
                   isSelected={item.isSelected}>
                 </UserItem>}
             />
+          
           </View>
           {this.renderButtons()}
         </View>
