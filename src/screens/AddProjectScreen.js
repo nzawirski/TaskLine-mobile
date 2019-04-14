@@ -51,15 +51,6 @@ export default class AddProjectScreen extends Component {
       'keyboardDidHide',
       () => { this.setState({ keyboardIsVisible: false }) },
     );
-    //check logged user
-    firestore.collection("Users").doc(auth.currentUser.uid).onSnapshot((doc) => {
-      this.setState({
-        currentUserId: doc.id,
-        currentUserName: doc.data().nick,
-        currentUserEmail: doc.data().email,
-      });
-      //add current user to project members at start
-    })
 
     //get data about all users
     firestore.collection("Users").onSnapshot((doc) => {
