@@ -9,7 +9,9 @@ class UserItem extends React.Component {
             <TouchableOpacity
                 style={styles.box}
             >
-                <View style={styles.mark}><Text>{this.props.nick}</Text>
+                <View style={styles.mark}>
+                    <Text>{this.props.nick}</Text>
+                    <Text>Email: {this.props.email}</Text>
                 </View>
             </TouchableOpacity>
         );

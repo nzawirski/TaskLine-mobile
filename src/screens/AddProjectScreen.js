@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  ScrollView
+  Keyboard,
+  FlatList,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -21,6 +19,8 @@ export default class AddProjectScreen extends Component {
     userSearch: '',
     allUsers: [],
     chosenUsers: [],
+    keyboard: false,
+    loading: true,
   };
 
   handleSubmit = () => {
@@ -32,42 +32,37 @@ export default class AddProjectScreen extends Component {
   };
 
   componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ()=>{this.setState({keyboard: true})},
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      ()=>{this.setState({keyboard: false})},
+    );
+
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
-        users.push([user.id, user.data().nick])
+        users.push({userId: user.id,
+           nick: user.data().nick,
+           email: user.data().email,
+          })
       })
-      this.setState({ allUsers: users })
+      this.setState({ allUsers: users, loading: false, })
+      
     })
   }
 
-  render() {
-    let userList = [];
-    this.state.allUsers.forEach((i) => {
-      userList.push(<UserItem userId={i[0]} nick={i[1]}></UserItem>)
-    });
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
 
-    return (
-      <ThemeProvider theme={theme}>
-        <View style={{ flex: 1 }}>
-          <View style={{ flex: 1, padding: 30 }}>
-
-            <Input
-              label="Project name"
-              onChangeText={(projectName) => this.setState({ projectName })}
-              selectionColor={"purple"}
-            />
-
-            <Input
-              label="Add collaborators"
-              onChangeText={(projectName) => this.setState({ projectName })}
-              selectionColor={"purple"}
-            />
-
-            <View style={{ flex: 1, marginVertical: 5 }}><ScrollView>{userList}</ScrollView></View>
-
-            <View style={styles.buttonContainer}>
-
+  smth = () => {
+    if (this.state.keyboard==false) {
+      return(
+        <View style={styles.buttonContainer}>
               <Button
                 buttonStyle={{
                   marginHorizontal: 10
@@ -97,10 +92,46 @@ export default class AddProjectScreen extends Component {
                 onPress={this.handleSubmit}
                 title="Add Project">
               </Button>
+              </View>
+      )
+    }
+  }
 
-            </View>
-          </View>
+  render() {
+    if (this.state.loading) {
+      return null; // or render a loading icon
+    } 
+    let n = this.state.allUsers;
 
+    if(this.state.userSearch!=""){
+      n = n.filter((user)=>{
+        return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase());
+      });
+    }
+    console.log(n);
+    return (
+      <ThemeProvider theme={theme}>
+        <View style={{flex: 1}}>
+
+            <Input
+              label="Project name"
+              onChangeText={(projectName) => this.setState({ projectName })}
+              selectionColor={"purple"}
+            />
+
+            <Input
+              label="Add collaborators"
+              onChangeText={(userSearch) => this.setState({ userSearch })}
+              selectionColor={"purple"}
+            />
+
+            <View style={{ flex: 1, marginVertical: 5 }}>
+            <FlatList 
+              data={n} 
+              renderItem={({item})=><UserItem nick={item.nick} email={item.email}></UserItem>} 
+            /></View>
+
+            {this.smth()}
         </View>
       </ThemeProvider>
     );
