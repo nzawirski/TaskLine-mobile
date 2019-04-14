@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   View,
+  Text,
   Keyboard,
   FlatList,
   ActivityIndicator,
@@ -35,6 +36,7 @@ export default class AddProjectScreen extends Component {
 
   componentDidMount() {
     console.log(">>>>>>>>>>>>>>>>>>>>> componentDidMount")
+    //keyboard listeners
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => { this.setState({ keyboardIsVisible: true }) },
@@ -43,7 +45,18 @@ export default class AddProjectScreen extends Component {
       'keyboardDidHide',
       () => { this.setState({ keyboardIsVisible: false }) },
     );
+    //check logged user
+    firestore.collection("Users").doc(auth.currentUser.uid).onSnapshot((doc) => {
+      this.setState({
+        currentUserId: doc.id,
+        currentUserName: doc.data().nick,
+        currentUserEmail: doc.data().email,
+      });
+      //add current user to project members at start
+      this.addUser(doc.id, doc.data().nick, doc.data().email)
+    })
 
+    //get data about all users
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
@@ -54,7 +67,6 @@ export default class AddProjectScreen extends Component {
         })
       })
       this.setState({ allUsers: users, loading: false, })
-
     })
   }
 
@@ -101,6 +113,22 @@ export default class AddProjectScreen extends Component {
     }
   }
 
+  addUser(userId, userName, userEmail) {
+    console.log("trying to add user", userName)
+    let idList = []
+    this.state.chosenUsers.forEach((user)=>{
+      idList.push(user.userId)
+    })
+    if (!idList.includes(userId)) {
+      this.state.chosenUsers.push({
+        userId: userId,
+        nick: userName,
+        email: userEmail,
+      })
+      console.log(">>>>>>>>>>>>>user " + userName + " added")
+    }
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -111,6 +139,7 @@ export default class AddProjectScreen extends Component {
       );
     }
     let userList = this.state.allUsers;
+    let chosenUserList = this.state.chosenUsers;
 
     if (this.state.userSearch != "") {
       userList = userList.filter((user) => {
@@ -138,7 +167,20 @@ export default class AddProjectScreen extends Component {
           <View style={{ flex: 1, marginVertical: 5 }}>
             <FlatList
               data={userList}
-              renderItem={({ item }) => <UserItem nick={item.nick} email={item.email}></UserItem>}
+              renderItem={({ item }) =>
+                <UserItem
+                  // we need to somehow call this.addUser(item.userId, item.nick, item.email) on press
+                  id={item.userId}
+                  nick={item.nick}
+                  email={item.email}>
+                </UserItem>}
+            />
+          </View>
+          <Text>Chosen Users</Text>
+          <View style={{ flex: 1, marginVertical: 5 }}>
+            <FlatList
+              data={chosenUserList}
+              renderItem={({ item }) => <UserItem id={item.userId} nick={item.nick} email={item.email}></UserItem>}
             />
           </View>
 
