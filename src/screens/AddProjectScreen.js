@@ -17,6 +17,7 @@ import { auth } from '../config';
 import UserItem from '../components/UserItem'
 
 export default class AddProjectScreen extends Component {
+
   state = {
     projectName: '',
     userSearch: '',
@@ -35,7 +36,7 @@ export default class AddProjectScreen extends Component {
   };
 
   componentDidMount() {
-    console.log(">>>>>>>>>>>>>>>>>>>>> componentDidMount")
+
     //keyboard listeners
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -113,18 +114,21 @@ export default class AddProjectScreen extends Component {
     }
   }
 
-  addUser(userId, userName, userEmail) {
+  addUser = (userId, userName, userEmail) => {
     console.log("trying to add user", userName)
     let idList = []
-    this.state.chosenUsers.forEach((user)=>{
+    this.state.chosenUsers.forEach((user) => {
       idList.push(user.userId)
     })
     if (!idList.includes(userId)) {
-      this.state.chosenUsers.push({
+      let stateCopy = this.state.chosenUsers
+      stateCopy.push({
         userId: userId,
         nick: userName,
         email: userEmail,
       })
+      this.setState({chosenUsers: stateCopy})
+
       console.log(">>>>>>>>>>>>>user " + userName + " added")
     }
   }
@@ -139,13 +143,11 @@ export default class AddProjectScreen extends Component {
       );
     }
     let userList = this.state.allUsers;
-    let chosenUserList = this.state.chosenUsers;
 
-    if (this.state.userSearch != "") {
-      userList = userList.filter((user) => {
-        return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
-      });
-    }
+    userList = userList.filter((user) => {
+      return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
+    });
+
 
     return (
       <ThemeProvider theme={theme}>
@@ -169,18 +171,24 @@ export default class AddProjectScreen extends Component {
               data={userList}
               renderItem={({ item }) =>
                 <UserItem
-                  // we need to somehow call this.addUser(item.userId, item.nick, item.email) on press
+                  onPress={() => this.addUser(item.userId, item.nick, item.email)}
                   id={item.userId}
                   nick={item.nick}
                   email={item.email}>
                 </UserItem>}
             />
           </View>
-          <Text>Chosen Users</Text>
+          <Text>Selected Users</Text>
           <View style={{ flex: 1, marginVertical: 5 }}>
             <FlatList
-              data={chosenUserList}
-              renderItem={({ item }) => <UserItem id={item.userId} nick={item.nick} email={item.email}></UserItem>}
+              data={this.state.chosenUsers}
+              extraData={this.state}
+              renderItem={({ item }) =>
+                <UserItem
+                  id={item.userId}
+                  nick={item.nick}
+                  email={item.email}>
+                </UserItem>}
             />
           </View>
 
