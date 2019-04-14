@@ -3,7 +3,8 @@ import { TouchableHighlight, View, Text, ScrollView } from 'react-native';
 import { styles } from '../styles';
 
 import { firestore } from '../config';
-
+import moment from 'moment';
+import 'moment/locale/en-gb'
 import TaskItem from '../components/TaskItem';
 
 export default class Board extends Component {
@@ -25,7 +26,7 @@ export default class Board extends Component {
     firestore.collection("Projects").doc(projectId).onSnapshot((doc) => {
       this.setState({
         projectName: doc.data().Name,
-        users: doc.data().Users 
+        users: doc.data().Users
       });
     })
 
@@ -42,7 +43,7 @@ export default class Board extends Component {
     })
   }
 
-  
+
 
   render() {
 
@@ -51,27 +52,49 @@ export default class Board extends Component {
 
     let taskList = [];
     this.state.tasks.forEach((i) => {
-      
+
       let today = new Date();
       let dueDate = new Date(i[3].seconds * 1000);
-      let dT = Math.round(((dueDate-today)/100000/24192)*510);
-      let red = (510-dT) > 255 ? red = 255 : red = (510-dT);
-      let green = (0+dT) > 255 ? green = 255 : green = (0+dT);
 
-      if(dueDate<today){
-        colorCode="rgb(0, 0, 0)";
+      let fourDays = 1000 * 60 * 60 * 24 * 4
+      let month = 1000 * 60 * 60 * 24 * 28
+
+      let dD = moment(dueDate).fromNow();
+      let timeUntil = dueDate - today
+
+      let timeNormalisedMonth = Math.round(((timeUntil) / month) * 510);
+      let timeNormalisedFourDays = Math.round(((timeUntil) / fourDays) * 510);
+
+      let red
+      let green
+      let blue
+
+      if (dueDate < today) {
+        red = 0
+        green = 0
+        blue = 0
       } else {
-        colorCode="rgb("+red.toString()+", "+green.toString()+", 0)";
+        if (timeUntil < fourDays) {
+          red = (510 - timeNormalisedFourDays);
+          green = 0
+          blue = (0 + timeNormalisedFourDays) / 2;
+        } else {
+          red = 0
+          green = (0 + timeNormalisedMonth);
+          blue = (510 - timeNormalisedMonth);
+        }
       }
-      
-      taskList.push(<TaskItem 
+      colorCode = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")";
+
+
+      taskList.push(<TaskItem
         TaskId={i[0]}
-        TaskName={i[1]} 
+        TaskName={i[1]}
         DateAdded={i[2]}
         DueDate={i[3]}
         AddedBy={i[4]}
         taskColor={colorCode}
-        ></TaskItem>) 
+      ></TaskItem>)
     })
 
     return (
