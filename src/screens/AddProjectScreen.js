@@ -3,6 +3,8 @@ import {
   View,
   Keyboard,
   FlatList,
+  ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -19,7 +21,7 @@ export default class AddProjectScreen extends Component {
     userSearch: '',
     allUsers: [],
     chosenUsers: [],
-    keyboard: false,
+    keyboardIsVisible: false,
     loading: true,
   };
 
@@ -32,25 +34,27 @@ export default class AddProjectScreen extends Component {
   };
 
   componentDidMount() {
+    console.log(">>>>>>>>>>>>>>>>>>>>> componentDidMount")
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
-      ()=>{this.setState({keyboard: true})},
+      () => { this.setState({ keyboardIsVisible: true }) },
     );
     this.keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      ()=>{this.setState({keyboard: false})},
+      () => { this.setState({ keyboardIsVisible: false }) },
     );
 
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
-        users.push({userId: user.id,
-           nick: user.data().nick,
-           email: user.data().email,
-          })
+        users.push({
+          userId: user.id,
+          nick: user.data().nick,
+          email: user.data().email,
+        })
       })
       this.setState({ allUsers: users, loading: false, })
-      
+
     })
   }
 
@@ -59,79 +63,86 @@ export default class AddProjectScreen extends Component {
     this.keyboardDidHideListener.remove();
   }
 
-  smth = () => {
-    if (this.state.keyboard==false) {
-      return(
+  renderButtons = () => {
+    if (!this.state.keyboardIsVisible) {
+      return (
         <View style={styles.buttonContainer}>
-              <Button
-                buttonStyle={{
-                  marginHorizontal: 10
-                }}
-                icon={
-                  <Icon
-                    name="window-close"
-                    size={15}
-                    color="white"
-                  />
-                }
-                onPress={() => this.props.navigation.goBack()}
-                title="Dismiss">
-              </Button>
+          <Button
+            buttonStyle={{
+              marginHorizontal: 10
+            }}
+            icon={
+              <Icon
+                name="window-close"
+                size={15}
+                color="white"
+              />
+            }
+            onPress={() => this.props.navigation.goBack()}
+            title="Dismiss">
+          </Button>
 
-              <Button
-                buttonStyle={{
-                  marginHorizontal: 10
-                }}
-                icon={
-                  <Icon
-                    name="check-circle"
-                    size={15}
-                    color="white"
-                  />
-                }
-                onPress={this.handleSubmit}
-                title="Add Project">
-              </Button>
-              </View>
+          <Button
+            buttonStyle={{
+              marginHorizontal: 10
+            }}
+            icon={
+              <Icon
+                name="check-circle"
+                size={15}
+                color="white"
+              />
+            }
+            onPress={this.handleSubmit}
+            title="Add Project">
+          </Button>
+        </View>
       )
     }
   }
 
   render() {
     if (this.state.loading) {
-      return null; // or render a loading icon
-    } 
-    let n = this.state.allUsers;
+      return (
+        <View>
+          <ActivityIndicator />
+          <StatusBar barStyle="default" />
+        </View>
+      );
+    }
+    let userList = this.state.allUsers;
 
-    if(this.state.userSearch!=""){
-      n = n.filter((user)=>{
-        return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase());
+    if (this.state.userSearch != "") {
+      userList = userList.filter((user) => {
+        return user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
       });
     }
-    console.log(n);
+
     return (
       <ThemeProvider theme={theme}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
 
-            <Input
-              label="Project name"
-              onChangeText={(projectName) => this.setState({ projectName })}
-              selectionColor={"purple"}
+          <Input
+            label="Project name"
+            onChangeText={(projectName) => this.setState({ projectName })}
+            selectionColor={"purple"}
+          />
+
+          <Input
+            label="Add project members"
+            onChangeText={(userSearch) => this.setState({ userSearch })}
+            selectionColor={"purple"}
+            placeholder={"Search user name or email"}
+          />
+
+          <View style={{ flex: 1, marginVertical: 5 }}>
+            <FlatList
+              data={userList}
+              renderItem={({ item }) => <UserItem nick={item.nick} email={item.email}></UserItem>}
             />
+          </View>
 
-            <Input
-              label="Add collaborators"
-              onChangeText={(userSearch) => this.setState({ userSearch })}
-              selectionColor={"purple"}
-            />
-
-            <View style={{ flex: 1, marginVertical: 5 }}>
-            <FlatList 
-              data={n} 
-              renderItem={({item})=><UserItem nick={item.nick} email={item.email}></UserItem>} 
-            /></View>
-
-            {this.smth()}
+          {this.renderButtons()}
         </View>
       </ThemeProvider>
     );
