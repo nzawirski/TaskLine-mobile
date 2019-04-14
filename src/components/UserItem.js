@@ -10,10 +10,19 @@ class UserItem extends Component {
                 style={styles.box}
                 onPress={this.props.onPress}
             >
+            {this.props.isSelected ? 
                 <View style={styles.mark}>
                     <Text>{this.props.nick}</Text>
                     <Text>Email: {this.props.email}</Text>
+                </View> 
+                :
+                <View style={[styles.mark, {borderLeftColor: "#e9e9e9"}]}>
+                    <Text>{this.props.nick}</Text>
+                    <Text>Email: {this.props.email}</Text>
                 </View>
+            }
+                
+
             </TouchableOpacity>
         );
     }

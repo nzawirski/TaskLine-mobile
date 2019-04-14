@@ -22,15 +22,16 @@ export default class AddProjectScreen extends Component {
     projectName: '',
     userSearch: '',
     allUsers: [],
-    chosenUsers: [],
     keyboardIsVisible: false,
     loading: true,
   };
 
   handleSubmit = () => {
     let idList = []
-    this.state.chosenUsers.forEach((user) => {
-      idList.push(user.userId)
+    this.state.allUsers.forEach((user) => {
+      if(user.isSelected){
+        idList.push(user.userId)
+      }
     })
     firestore.collection("Projects").add({
       Name: this.state.projectName,
@@ -58,18 +59,27 @@ export default class AddProjectScreen extends Component {
         currentUserEmail: doc.data().email,
       });
       //add current user to project members at start
-      this.addUser(doc.id, doc.data().nick, doc.data().email)
     })
 
     //get data about all users
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
-        users.push({
-          userId: user.id,
-          nick: user.data().nick,
-          email: user.data().email,
-        })
+        if(user.id==auth.currentUser.uid){
+          users.push({
+            userId: user.id,
+            nick: user.data().nick,
+            email: user.data().email,
+            isSelected: true,
+          })
+        } else {
+          users.push({
+            userId: user.id,
+            nick: user.data().nick,
+            email: user.data().email,
+            isSelected: false,
+          })
+        }
       })
       this.setState({ allUsers: users, loading: false, })
     })
@@ -118,23 +128,20 @@ export default class AddProjectScreen extends Component {
     }
   }
 
-  addUser = (userId, userName, userEmail) => {
-    console.log("trying to add user", userName)
-    let idList = []
-    this.state.chosenUsers.forEach((user) => {
-      idList.push(user.userId)
-    })
-    if (!idList.includes(userId)) {
-      let stateCopy = this.state.chosenUsers
-      stateCopy.push({
-        userId: userId,
-        nick: userName,
-        email: userEmail,
-      })
-      this.setState({chosenUsers: stateCopy})
+  selectItem = (uEmail) => {
+    let userList = this.state.allUsers;
 
-      console.log(">>>>>>>>>>>>>user " + userName + " added")
-    }
+    userList.forEach((item)=>{
+      if(uEmail==item.email){
+        if(item.userId!=auth.currentUser.uid){
+          item.isSelected = !item.isSelected;
+        }
+      }
+    })
+
+    this.setState({
+      allUsers: userList,
+    })
   }
 
   render() {
@@ -175,27 +182,14 @@ export default class AddProjectScreen extends Component {
               data={userList}
               renderItem={({ item }) =>
                 <UserItem
-                  onPress={() => this.addUser(item.userId, item.nick, item.email)}
+                  onPress={() => this.selectItem(item.email)}
                   id={item.userId}
                   nick={item.nick}
-                  email={item.email}>
+                  email={item.email}
+                  isSelected={item.isSelected}>
                 </UserItem>}
             />
           </View>
-          <Text>Selected Users</Text>
-          <View style={{ flex: 1, marginVertical: 5 }}>
-            <FlatList
-              data={this.state.chosenUsers}
-              extraData={this.state}
-              renderItem={({ item }) =>
-                <UserItem
-                  id={item.userId}
-                  nick={item.nick}
-                  email={item.email}>
-                </UserItem>}
-            />
-          </View>
-
           {this.renderButtons()}
         </View>
       </ThemeProvider>
