@@ -28,10 +28,14 @@ export default class AddProjectScreen extends Component {
   };
 
   handleSubmit = () => {
+    let idList = []
+    this.state.chosenUsers.forEach((user) => {
+      idList.push(user.userId)
+    })
     firestore.collection("Projects").add({
       Name: this.state.projectName,
       Date: new Date(),
-      Users: [auth.currentUser.uid]
+      Users: idList
     }).then(() => this.props.navigation.goBack())
   };
 
