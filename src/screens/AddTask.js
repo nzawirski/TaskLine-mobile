@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   StatusBar,
 } from 'react-native';
-
+import { Input, Button } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import 'moment/locale/en-gb'
@@ -197,26 +197,26 @@ export default class AddTask extends Component {
         return user.isSelected == true;
       });
     }
-
-
+    
     return (
       <View style={{ flex: 1 }}>
 
         {/* Task name */}
-        <Text style={styles.title}>
-          Task Name:
-          </Text>
-        <TextInput
-          style={styles.itemInput}
+        <Input
+          label="Task name"
           onChangeText={(taskName) => this.setState({ taskName })}
           selectionColor={"purple"}
         />
-        <TextInput
-          style={styles.itemInput}
+        {/* Date Picker */}
+        {this.renderDatePicker()}
+        {/* User Search */}
+        <Input
+          label="Assign members"
           onChangeText={(userSearch) => this.setState({ userSearch })}
           selectionColor={"purple"}
+          placeholder="Search user name or email"
         />
-        {this.renderDatePicker()}
+        
         <View style={{ flex: 1, marginVertical: 5 }}>
           <FlatList
             data={userList}
@@ -230,6 +230,7 @@ export default class AddTask extends Component {
               </UserItem>}
           />
         </View>
+        {/* Buttons */}
         {this.renderButtons()}
 
       </View>
