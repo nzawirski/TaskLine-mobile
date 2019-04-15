@@ -74,9 +74,9 @@ export default class Taskline extends Component {
       colorCode = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")";
 
       if (isCompleted) {
-        completedLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>);
+        completedLine.push(<TasklineItem taskId={i[0]} taskName={i[1]} taskDue={dD} taskColor={colorCode}></TasklineItem>);
       } else {
-        activeLine.push(<TasklineItem taskName={i[1]} taskDue={dD} taskColor={colorCode} isNotLate={isNotLate}></TasklineItem>);
+        activeLine.push(<TasklineItem taskId={i[0]} taskName={i[1]} taskDue={dD} taskColor={colorCode} isNotLate={isNotLate}></TasklineItem>);
       }
     })
 

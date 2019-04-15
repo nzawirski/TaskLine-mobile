@@ -44,10 +44,18 @@ const ProjectsStack = createStackNavigator({
   headerMode: 'none',
 })
 
+const TasklineStack = createStackNavigator({
+  Taskline: Taskline,
+  TaskScreen: TaskScreen
+},{
+  mode: 'modal',
+  headerMode: 'none',
+})
+
 const AppNavigator = createMaterialTopTabNavigator({
   Home: Home,
   Projects: ProjectsStack,
-  Taskline: Taskline,
+  Taskline: TasklineStack,
   Options: Options
 }, {
     tabBarOptions: {
