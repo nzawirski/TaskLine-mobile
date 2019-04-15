@@ -56,7 +56,7 @@ export default class TaskScreen extends Component {
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
-        if (user.id == auth.currentUser.uid) {
+        if (this.state.users.includes(user.id)) {
           users.push({
             userId: user.id,
             nick: user.data().nick,
