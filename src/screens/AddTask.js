@@ -47,14 +47,14 @@ export default class AddTask extends Component {
     const { navigation } = this.props;
     const projectId = navigation.getParam('projectId', null);
 
-    firestore.collection("Projects").doc(projectId).onSnapshot((doc)=>{
-      this.setState({projectUsers: doc.data().id})
+    firestore.collection("Projects").doc(projectId).onSnapshot((doc) => {
+      this.setState({ projectUsers: doc.data().Users })
     })
 
     firestore.collection("Users").onSnapshot((doc) => {
       let users = [];
       doc.forEach((user) => {
-        if(user.id==auth.currentUser.uid){
+        if (user.id == auth.currentUser.uid) {
           users.push({
             userId: user.id,
             nick: user.data().nick,
@@ -87,7 +87,7 @@ export default class AddTask extends Component {
           <Text style={styles.title}>
             Due Date:
           </Text>
-          <Text style={{color: 'mediumpurple'}}>
+          <Text style={{ color: 'mediumpurple' }}>
             {moment(this.state.dueDate).format('LLL')}
           </Text>
           <TouchableHighlight
@@ -102,7 +102,8 @@ export default class AddTask extends Component {
             onCancel={this._hideDateTimePicker}
           />
         </View>
-      )}
+      )
+    }
   }
 
   renderButtons = () => {
@@ -110,18 +111,18 @@ export default class AddTask extends Component {
       return ([
 
         <TouchableHighlight
-        style={styles.button}
-        onPress={this.handleSubmit}
-        underlayColor={"lavender"}>
-        <Text style={styles.buttonText}>Add Task</Text>
-      </TouchableHighlight>,
+          style={styles.button}
+          onPress={this.handleSubmit}
+          underlayColor={"lavender"}>
+          <Text style={styles.buttonText}>Add Task</Text>
+        </TouchableHighlight>,
 
-      <TouchableHighlight
-        style={styles.button2}
-        onPress={() => this.props.navigation.goBack()}
-        underlayColor={"lavender"}>
-        <Text style={styles.buttonText}>Dismiss</Text>
-      </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.button2}
+          onPress={() => this.props.navigation.goBack()}
+          underlayColor={"lavender"}>
+          <Text style={styles.buttonText}>Dismiss</Text>
+        </TouchableHighlight>
       ]
       )
     }
@@ -133,7 +134,7 @@ export default class AddTask extends Component {
 
   _handleDatePicked = (date) => {
     console.log('A date has been picked: ', date);
-    this.setState({ 
+    this.setState({
       dueDate: new Date(date)
     });
     this._hideDateTimePicker();
@@ -142,14 +143,19 @@ export default class AddTask extends Component {
   handleSubmit = () => {
     const { navigation } = this.props;
     const projectId = navigation.getParam('projectId', null);
-    // todo: assigning users
+    let idList = []
+    this.state.allUsers.forEach((user) => {
+      if (user.isSelected) {
+        idList.push(user.userId)
+      }
+    })
     firestore.collection("Tasks").add({
       Name: this.state.taskName,
       Description: "",
       DateAdded: new Date(),
       DueDate: this.state.dueDate,
       ProjectId: projectId,
-      Users: [auth.currentUser.uid],
+      Users: idList,
       AddedBy: auth.currentUser.uid,
       isCompleted: false
     }).then(() => this.props.navigation.goBack())
@@ -158,11 +164,9 @@ export default class AddTask extends Component {
   selectItem = (uEmail) => {
     let userList = this.state.allUsers;
 
-    userList.forEach((item)=>{
-      if(uEmail==item.email){
-        if(item.userId!=auth.currentUser.uid){
-          item.isSelected = !item.isSelected;
-        }
+    userList.forEach((item) => {
+      if (uEmail == item.email) {
+        item.isSelected = !item.isSelected;
       }
     })
 
@@ -181,53 +185,53 @@ export default class AddTask extends Component {
       );
     }
 
-   userList = this.state.allUsers;
-   projectUsers = this.state.projectUsers;
+    userList = this.state.allUsers;
+    projectUsers = this.state.projectUsers;
 
-   if(this.state.userSearch!=""){
-    userList = userList.filter((user) => {
-      return user.isSelected == true || projectUsers.includes(users.userId) || user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase());
-    });
+    if (this.state.userSearch != "") {
+      userList = userList.filter((user) => {
+        return user.isSelected == true || projectUsers.includes(user.userId) && (user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) || user.email.toLowerCase().includes(this.state.userSearch.toLowerCase()));
+      });
     } else {
       userList = userList.filter((user) => {
         return user.isSelected == true;
       });
     }
 
-    
+
     return (
       <View style={{ flex: 1 }}>
-        
-          {/* Task name */}
-          <Text style={styles.title}>
-            Task Name:
+
+        {/* Task name */}
+        <Text style={styles.title}>
+          Task Name:
           </Text>
-          <TextInput
-            style={styles.itemInput}
-            onChangeText={(taskName) => this.setState({ taskName })}
-            selectionColor={"purple"}
-          />
-          <TextInput
-            style={styles.itemInput}
-            onChangeText={(userSearch) => this.setState({ userSearch })}
-            selectionColor={"purple"}
-          />
-          {this.renderDatePicker()}
-          <View style={{ flex: 1, marginVertical: 5 }}>
+        <TextInput
+          style={styles.itemInput}
+          onChangeText={(taskName) => this.setState({ taskName })}
+          selectionColor={"purple"}
+        />
+        <TextInput
+          style={styles.itemInput}
+          onChangeText={(userSearch) => this.setState({ userSearch })}
+          selectionColor={"purple"}
+        />
+        {this.renderDatePicker()}
+        <View style={{ flex: 1, marginVertical: 5 }}>
           <FlatList
-              data={userList}
-              renderItem={({ item }) =>
-                <UserItem
-                  onPress={() => this.selectItem(item.email)}
-                  id={item.userId}
-                  nick={item.nick}
-                  email={item.email}
-                  isSelected={item.isSelected}>
-                </UserItem>}
-            />
-            </View>
-          {this.renderButtons()}
-        
+            data={userList}
+            renderItem={({ item }) =>
+              <UserItem
+                onPress={() => this.selectItem(item.email)}
+                id={item.userId}
+                nick={item.nick}
+                email={item.email}
+                isSelected={item.isSelected}>
+              </UserItem>}
+          />
+        </View>
+        {this.renderButtons()}
+
       </View>
     );
   }
