@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
   View,
-  Text,
   Keyboard,
   FlatList,
   ActivityIndicator,
   StatusBar,
 } from 'react-native';
+
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ThemeProvider } from 'react-native-elements';
@@ -97,7 +97,7 @@ export default class AddProjectScreen extends Component {
               />
             }
             onPress={() => this.props.navigation.goBack()}
-            title="Dismiss">
+            title=" Dismiss">
           </Button>
 
           <Button
@@ -112,7 +112,7 @@ export default class AddProjectScreen extends Component {
               />
             }
             onPress={this.handleSubmit}
-            title="Add Project">
+            title=" Add Project">
           </Button>
         </View>
       )

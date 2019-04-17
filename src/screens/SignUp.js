@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text } from 'react-native';
 
-import { styles } from '../styles';
+import { Input, Button } from 'react-native-elements';
+import { ThemeProvider } from 'react-native-elements';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { styles, theme } from '../styles';
+
 import { auth } from '../config';
 import { firestore } from '../config';
 
@@ -40,38 +46,65 @@ export default class SignUp extends Component {
 
   render() {
     return (
-      <View style={styles.main}>
-        <Text style={styles.title}>Sign Up:</Text>
+      <ThemeProvider theme={theme}>
+        <View style={styles.main}>
+          <Text style={styles.title}>Sign Up</Text>
 
-        <Text style={styles.title}>Nickname:</Text>
-        <TextInput 
-          style={styles.itemInput} 
-          onChangeText={(nick) => this.setState({nick})} 
-          selectionColor={"purple"}
-        />
+          <Input
+            label="User Name"
+            onChangeText={(nick) => this.setState({ nick })}
+            inputStyle={{color: "#89939B"}}
+            selectionColor={"purple"}
+          />
 
-        <Text style={styles.title}>Email:</Text>
-        <TextInput 
-          style={styles.itemInput} 
-          onChangeText={(email) => this.setState({email})} 
-          selectionColor={"purple"}
-        />
+          <Input
+            label="Email"
+            onChangeText={(email) => this.setState({ email })}
+            inputStyle={{color: "#89939B"}}
+            selectionColor={"purple"}
+          />
 
-        <Text style={styles.title}>Pass:</Text>
-        <TextInput
-          secureTextEntry={true} 
-          style={styles.itemInput} 
-          onChangeText={(password) => this.setState({password})}
-          selectionColor={"purple"}
-        />
+          <Input
+            label="Password"
+            onChangeText={(password) => this.setState({ password })}
+            inputStyle={{color: "#89939B"}}
+            secureTextEntry={true}
+            selectionColor={"purple"}
+          />
 
-        <TouchableHighlight
-          style={styles.button}
-          onPress={this.handleSubmit}
-          underlayColor={"lavender"}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableHighlight>
-      </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="window-close"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={() => this.props.navigation.goBack()}
+              title="Go Back">
+            </Button>
+
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="check-circle"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={this.handleSubmit}
+              title="Sign Up">
+            </Button>
+          </View>
+        </View>
+      </ThemeProvider>
     );
   }
 }

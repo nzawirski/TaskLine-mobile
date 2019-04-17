@@ -5,7 +5,11 @@ export default class ChangeLogItem extends Component {
 
   render() {
     return (
-        <TouchableOpacity style={styles.box}><View style={styles.mark}><Text>{this.props.msg}</Text></View></TouchableOpacity>
+        <TouchableOpacity style={styles.box}>
+          <View style={styles.mark}>
+            <Text><Text style={{color: "mediumpurple"}}>{this.props.who}</Text> <Text>{this.props.did}</Text> <Text style={{color: "mediumpurple"}}>{this.props.what}</Text></Text>
+          </View>
+        </TouchableOpacity>
     );
   }
 };

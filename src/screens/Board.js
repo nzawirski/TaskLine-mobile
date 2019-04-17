@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { TouchableHighlight, View, Text, ScrollView } from 'react-native';
-import { styles } from '../styles';
+import { TouchableHighlight, View, Text, ScrollView, FlatList, ActivityIndicator, StatusBar, } from 'react-native';
+
+import { Button } from 'react-native-elements';
+import { ThemeProvider } from 'react-native-elements';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { styles, theme } from '../styles';
+import TaskItem from '../components/TaskItem';
 
 import { firestore } from '../config';
 import moment from 'moment';
 import 'moment/locale/en-gb'
-import TaskItem from '../components/TaskItem';
+
 
 export default class Board extends Component {
 
@@ -13,7 +20,8 @@ export default class Board extends Component {
     pid: "",
     projectName: "",
     users: [],
-    tasks: []
+    tasks: [],
+    loading: true,
   }
 
   componentDidMount() {
@@ -39,13 +47,22 @@ export default class Board extends Component {
       task.data().AddedBy,
       task.data().Users
       ]));
-      this.setState({ tasks: tasks })
+      this.setState({ tasks: tasks, loading: false })
     })
   }
 
 
 
   render() {
+
+    if (this.state.loading) {
+      return (
+        <View>
+          <ActivityIndicator />
+          <StatusBar barStyle="default" />
+        </View>
+      );
+    }
 
     let userList = [];
     this.state.users.forEach((i) => { userList.push(<Text>U: {i}</Text>) })
@@ -98,29 +115,46 @@ export default class Board extends Component {
     })
 
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 9, }}>
-          <Text style={styles.title}>Project {this.state.projectName}</Text>
-          {userList}
-          <ScrollView contentContainerStyle={styles.scroll}>{taskList}</ScrollView>
+      <ThemeProvider theme={theme}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 10, }}>
+            <Text style={styles.title}>Project <Text style={{color: "mediumpurple"}}>{this.state.projectName}</Text></Text>
+            {userList}
+            <ScrollView contentContainerStyle={{flexDirection: "row", flexWrap: "wrap", }}>{taskList}</ScrollView>
+          </View>
 
+          <View style={styles.buttonContainer}>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="user-plus"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={() => this.props.navigation.navigate('AddUser', { projectId: this.state.pid })}
+              title=" Add User">
+            </Button>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="plus-circle"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={() => this.props.navigation.navigate('AddTask', { projectId: this.state.pid })}
+              title=" Add Task">
+            </Button>
+          </View>
         </View>
-
-        <View style={styles.purple}>
-          <TouchableHighlight
-            style={styles.button2}
-            onPress={() => this.props.navigation.navigate('AddUser', { projectId: this.state.pid })}
-            underlayColor={"lavender"}>
-            <Text style={styles.buttonText}>Add user</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.button2}
-            onPress={() => this.props.navigation.navigate('AddTask', { projectId: this.state.pid })}
-            underlayColor={"lavender"}>
-            <Text style={styles.buttonText}>Add task</Text>
-          </TouchableHighlight>
-        </View>
-      </View>
+      </ThemeProvider>
     );
   }
 }

@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { styles } from '../styles';
+import { View, ScrollView, TouchableOpacity, Text, ActivityIndicator, StatusBar,} from 'react-native';
 
+import { Button } from 'react-native-elements';
+import { ThemeProvider } from 'react-native-elements';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { styles, theme } from '../styles';
 import TasklineItem from '../components/TasklineItem';
 
 import { auth, firestore } from '../config';
@@ -13,6 +18,7 @@ export default class Taskline extends Component {
   state = {
     tasks: [],
     swap: false,
+    loading: true,
   }
 
   componentDidMount() {
@@ -26,11 +32,21 @@ export default class Taskline extends Component {
       task.data().Description,
       task.data().isCompleted
       ]));
-      this.setState({ tasks })
+      this.setState({ tasks, loading: false, })
     })
   }
 
   render() {
+
+    if (this.state.loading) {
+      return (
+        <View>
+          <ActivityIndicator />
+          <StatusBar barStyle="default" />
+        </View>
+      );
+    }
+
     let completedLine = [];
     let activeLine = [];
     let colorCode = "";
@@ -81,22 +97,50 @@ export default class Taskline extends Component {
     })
 
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 10 }}>
-          {this.state.swap ?
-            <ScrollView>
-              {completedLine}
-            </ScrollView> :
-            <ScrollView>
-              {activeLine}
-            </ScrollView>}
+      <ThemeProvider theme={theme}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 10 }}>
+            {this.state.swap ?
+              <ScrollView>
+                {completedLine}
+              </ScrollView> :
+              <ScrollView>
+                {activeLine}
+              </ScrollView>}
+          </View>
+          
+          <View style={styles.buttonContainer}>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="file"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={() => { this.setState({ swap: false }) }}
+              title=" Current">
+            </Button>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={
+                <Icon
+                  name="archive"
+                  size={15}
+                  color="white"
+                />
+              }
+              onPress={() => { this.setState({ swap: true }) }}
+              title=" Completed">
+            </Button>
+          </View>
         </View>
-        <View style={styles.purple}>
-          <TouchableOpacity onPress={() => { this.setState({ swap: false }) }} style={styles.button2}><Text>Current</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => { this.setState({ swap: true }) }} style={styles.button2}><Text>Completed</Text></TouchableOpacity>
-        </View>
-      </View>
-
+      </ThemeProvider>
     );
   }
 }
