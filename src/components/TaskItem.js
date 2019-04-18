@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   FlatList
 } from "react-native";
 import { withNavigation } from "react-navigation";
@@ -21,12 +20,11 @@ import { firestore } from "../config";
 import moment from "moment";
 import "moment/locale/en-gb";
 
-var width = Dimensions.get("window").width;
-
 class TaskItem extends React.Component {
   state = {
     user: "",
     number: 0,
+    categories: [],
     isOverlayActive: false
   };
 
@@ -55,6 +53,32 @@ class TaskItem extends React.Component {
       };
   }
 
+  getCategories() {
+    let categoryList = [];
+
+    this.props.ProjectCategories.forEach(item => {
+      if (
+        this.props.Categories.some(element => {
+          return element.Name == item.Name;
+        })
+      ) {
+        categoryList.push({
+          Name: item.Name,
+          Color: item.Color,
+          isSelected: true
+        });
+      } else {
+        categoryList.push({
+          Name: item.Name,
+          Color: item.Color,
+          isSelected: false
+        });
+      }
+    });
+
+    this.setState({ categories: categoryList });
+  }
+
   componentDidMount() {
     this.getName();
   }
@@ -62,6 +86,7 @@ class TaskItem extends React.Component {
   componentWillReceiveProps = () => {
     //wait 100ms for item to realise userId has changed
     setTimeout(() => {
+      this.getCategories();
       this.getName();
     }, 100);
   };
@@ -86,6 +111,39 @@ class TaskItem extends React.Component {
     clearTimeout(this.timer);
   };
 
+  handleSubmit = () => {
+    let catList = [];
+    this.state.categories.forEach(cat => {
+      if (cat.isSelected) {
+        catList.push({ Name: cat.Name, Color: cat.Color });
+      }
+    });
+
+    firestore
+      .collection("Tasks")
+      .doc(this.props.TaskId)
+      .update({
+        Categories: catList
+      });
+
+    this.setState({ isOverlayActive: false });
+  };
+
+  selectItem = catName => {
+    let categoryList = this.state.categories;
+
+    categoryList.forEach(item => {
+      console.log("catName >> " + catName + "item.Name >> " + item.Name);
+      if (catName == item.Name) {
+        item.isSelected = !item.isSelected;
+      }
+    });
+
+    this.setState({
+      categories: categoryList
+    });
+  };
+
   render() {
     let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
     let dueDate = new Date(this.props.DueDate.seconds * 1000);
@@ -106,7 +164,7 @@ class TaskItem extends React.Component {
       )
     );
 
-    let categoryList = this.props.ProjectCategories;
+    let categoryList = this.state.categories;
 
     return (
       <TouchableOpacity
@@ -120,10 +178,13 @@ class TaskItem extends React.Component {
           >
             <FlatList
               data={categoryList}
+              extraData={this.state}
               renderItem={({ item }) => (
                 <CategoryItem
+                  onPress={() => this.selectItem(item.Name)}
                   categoryName={item.Name}
                   categoryColor={item.Color}
+                  isSelected={item.isSelected}
                 />
               )}
             />
