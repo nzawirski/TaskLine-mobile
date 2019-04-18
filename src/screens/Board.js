@@ -77,7 +77,7 @@ export default class Board extends Component {
             dueDate: task.data().DueDate,
             addedBy: task.data().AddedBy,
             users: task.data().Users,
-            status: task.data().Status
+            status: task.data().Status ? task.data().Status : "pending",
           })
         );
         this.setState({ tasks, loading: false });
