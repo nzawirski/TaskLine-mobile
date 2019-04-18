@@ -143,9 +143,7 @@ export default class AddProjectScreen extends Component {
       userList = userList.filter(user => {
         return (
           user.isSelected == true ||
-          user.nick
-            .toLowerCase()
-            .includes(this.state.userSearch.toLowerCase()) ||
+          user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) ||
           user.email.toLowerCase().includes(this.state.userSearch.toLowerCase())
         );
       });
