@@ -1,47 +1,51 @@
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import React, { Component } from "react";
+import { View, Text } from "react-native";
 
-import { Input, Button } from 'react-native-elements';
-import { ThemeProvider } from 'react-native-elements';
+import { Input, Button } from "react-native-elements";
+import { ThemeProvider } from "react-native-elements";
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/FontAwesome";
 
-import { styles, theme } from '../styles';
+import { styles, theme } from "../styles";
 
-import { auth } from '../config';
-import { firestore } from '../config';
+import { auth } from "../config";
+import { firestore } from "../config";
 
 export default class SignUp extends Component {
   state = {
-    nick: '',
-    email: '',
-    password: '',
-    user: null,
-  }
+    nick: "",
+    email: "",
+    password: "",
+    user: null
+  };
 
   componentDidMount() {
-    auth.onAuthStateChanged((user) => {
-      this.setState({ user })
-    })
+    auth.onAuthStateChanged(user => {
+      this.setState({ user });
+    });
   }
 
   handleSubmit = () => {
     //create user
-    auth.createUserWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-      //save him in database
-      //console.warn(auth.currentUser)
-      firestore.collection("Users").doc(auth.currentUser.uid).set({
-        nick: this.state.nick,
-        email: auth.currentUser.email,
-        icon: "https://image.flaticon.com/icons/png/128/149/149071.png",
-      })
+    auth
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        //save him in database
+        //console.warn(auth.currentUser)
+        firestore
+          .collection("Users")
+          .doc(auth.currentUser.uid)
+          .set({
+            nick: this.state.nick,
+            email: auth.currentUser.email,
+            icon: "https://image.flaticon.com/icons/png/128/149/149071.png"
+          });
 
-      //if succeeded go to app stack
-    this.props.navigation.navigate(auth.currentUser ? 'App' : 'Auth');
-    })
+        //if succeeded go to app stack
+        this.props.navigation.navigate(auth.currentUser ? "App" : "Auth");
+      });
 
     //TODO: handle errors
-
   };
 
   render() {
@@ -52,22 +56,22 @@ export default class SignUp extends Component {
 
           <Input
             label="User Name"
-            onChangeText={(nick) => this.setState({ nick })}
-            inputStyle={{color: "#89939B"}}
+            onChangeText={nick => this.setState({ nick })}
+            inputStyle={{ color: "#89939B" }}
             selectionColor={"purple"}
           />
 
           <Input
             label="Email"
-            onChangeText={(email) => this.setState({ email })}
-            inputStyle={{color: "#89939B"}}
+            onChangeText={email => this.setState({ email })}
+            inputStyle={{ color: "#89939B" }}
             selectionColor={"purple"}
           />
 
           <Input
             label="Password"
-            onChangeText={(password) => this.setState({ password })}
-            inputStyle={{color: "#89939B"}}
+            onChangeText={password => this.setState({ password })}
+            inputStyle={{ color: "#89939B" }}
             secureTextEntry={true}
             selectionColor={"purple"}
           />
@@ -77,31 +81,19 @@ export default class SignUp extends Component {
               buttonStyle={{
                 marginHorizontal: 10
               }}
-              icon={
-                <Icon
-                  name="window-close"
-                  size={15}
-                  color="white"
-                />
-              }
+              icon={<Icon name="window-close" size={15} color="white" />}
               onPress={() => this.props.navigation.goBack()}
-              title="Go Back">
-            </Button>
+              title=" Go Back"
+            />
 
             <Button
               buttonStyle={{
                 marginHorizontal: 10
               }}
-              icon={
-                <Icon
-                  name="check-circle"
-                  size={15}
-                  color="white"
-                />
-              }
+              icon={<Icon name="check-circle" size={15} color="white" />}
               onPress={this.handleSubmit}
-              title="Sign Up">
-            </Button>
+              title=" Sign Up"
+            />
           </View>
         </View>
       </ThemeProvider>

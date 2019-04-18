@@ -9,7 +9,7 @@ import Options from './src/screens/Options';
 import Board from './src/screens/Board';
 import AddProjectScreen from './src/screens/AddProjectScreen';
 import AddTask from './src/screens/AddTask';
-import AddUser from './src/screens/AddUser';
+import ManageUsers from './src/screens/ManageUsers';
 import TaskScreen from './src/screens/TaskScreen';
 
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
@@ -28,7 +28,7 @@ const AuthStack = createStackNavigator({
 const BoardStack = createStackNavigator({
   Board: Board,
   AddTask: AddTask,
-  AddUser: AddUser,
+  ManageUsers: ManageUsers,
   TaskScreen: TaskScreen
 }, {
   mode: 'modal',

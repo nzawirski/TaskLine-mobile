@@ -1,47 +1,45 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   View,
   Text,
   FlatList,
   ActivityIndicator,
-  StatusBar,
-} from 'react-native';
+  StatusBar
+} from "react-native";
 
-import { Button } from 'react-native-elements';
-import { ThemeProvider } from 'react-native-elements';
+import { Button } from "react-native-elements";
+import { ThemeProvider } from "react-native-elements";
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/FontAwesome";
 
-import { styles, theme } from '../styles';
-import ProjectItem from '../components/ProjectItem';
+import { styles, theme } from "../styles";
+import ProjectItem from "../components/ProjectItem";
 
-import { auth, firestore } from '../config';
-
-
+import { auth, firestore } from "../config";
 
 export default class Projects extends Component {
   state = {
     projects: [],
-    loading: true,
+    loading: true
   };
 
-  componentDidMount(){
-    firestore.collection("Projects").where("Users", "array-contains",auth.currentUser.uid).onSnapshot((projs)=>{
-    let projects=[];
-    projs.forEach((doc)=>{
-      projects.push({
-        id: doc.id, 
-        name: doc.data().Name
-      })
-    });
-    this.setState({ projects, loading: false, });
-  })
+  componentDidMount() {
+    firestore
+      .collection("Projects")
+      .where("Users", "array-contains", auth.currentUser.uid)
+      .onSnapshot(projs => {
+        let projects = [];
+        projs.forEach(doc => {
+          projects.push({
+            id: doc.id,
+            name: doc.data().Name
+          });
+        });
+        this.setState({ projects, loading: false });
+      });
   }
 
-
-
   render() {
-
     if (this.state.loading) {
       return (
         <View>
@@ -51,21 +49,21 @@ export default class Projects extends Component {
       );
     }
 
-    projects=this.state.projects;
-  
+    projects = this.state.projects;
+
     return (
       <ThemeProvider theme={theme}>
-        <View style={{flex: 1}}>
-          <View style={{flex: 1}}><Text style={styles.title}>Projects:</Text></View>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>Projects:</Text>
+          </View>
 
-          <View style={{flex: 8}}>
+          <View style={{ flex: 8 }}>
             <FlatList
-                data={projects}
-                renderItem={({ item }) =>
-                <ProjectItem 
-                  projectId={item.id} 
-                  projectName={item.name}
-                />}
+              data={projects}
+              renderItem={({ item }) => (
+                <ProjectItem projectId={item.id} projectName={item.name} />
+              )}
             />
           </View>
 
@@ -74,21 +72,13 @@ export default class Projects extends Component {
               buttonStyle={{
                 marginHorizontal: 10
               }}
-              icon={
-                <Icon
-                  name="plus"
-                  size={15}
-                  color="white"
-                />
-              }
-              onPress={() => this.props.navigation.navigate('AddProjectScreen')}
-              title=" Add project">
-            </Button>
+              icon={<Icon name="plus" size={15} color="white" />}
+              onPress={() => this.props.navigation.navigate("AddProjectScreen")}
+              title=" Add project"
+            />
           </View>
         </View>
       </ThemeProvider>
     );
   }
 }
-
-

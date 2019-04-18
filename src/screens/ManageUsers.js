@@ -1,45 +1,28 @@
 import React, { Component } from "react";
 import {
   View,
-  Keyboard,
   FlatList,
   ActivityIndicator,
-  StatusBar
+  StatusBar,
+  Keyboard
 } from "react-native";
 
-import { Input, Button } from "react-native-elements";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Button, Input } from "react-native-elements";
 import { ThemeProvider } from "react-native-elements";
 
+import Icon from "react-native-vector-icons/FontAwesome";
+
 import { styles, theme } from "../styles";
-import { firestore } from "../config";
-import { auth } from "../config";
 import UserItem from "../components/UserItem";
 
-export default class AddProjectScreen extends Component {
+import { auth, firestore } from "../config";
+
+export default class AddUser extends Component {
   state = {
-    projectName: "",
     userSearch: "",
     allUsers: [],
-    keyboardIsVisible: false,
+    projectUsers: [],
     loading: true
-  };
-
-  handleSubmit = () => {
-    let idList = [];
-    this.state.allUsers.forEach(user => {
-      if (user.isSelected) {
-        idList.push(user.userId);
-      }
-    });
-    firestore
-      .collection("Projects")
-      .add({
-        Name: this.state.projectName,
-        Date: new Date(),
-        Users: idList
-      })
-      .then(() => this.props.navigation.goBack());
   };
 
   componentDidMount() {
@@ -57,11 +40,20 @@ export default class AddProjectScreen extends Component {
       }
     );
 
+    const { navigation } = this.props;
+    const projectId = navigation.getParam("projectId", null);
+    //get ids of project users
+    firestore
+      .collection("Projects")
+      .doc(projectId)
+      .onSnapshot(doc2 => {
+        this.setState({ projectUsers: doc2.data().Users });
+      });
     //get data about all users
     firestore.collection("Users").onSnapshot(doc => {
       let users = [];
       doc.forEach(user => {
-        if (user.id == auth.currentUser.uid) {
+        if (this.state.projectUsers.includes(user.id)) {
           users.push({
             userId: user.id,
             nick: user.data().nick,
@@ -105,11 +97,31 @@ export default class AddProjectScreen extends Component {
             }}
             icon={<Icon name="check-circle" size={15} color="white" />}
             onPress={this.handleSubmit}
-            title=" Add Project"
+            title=" Apply"
           />
         </View>
       );
     }
+  };
+
+  handleSubmit = () => {
+    const { navigation } = this.props;
+    const projectId = navigation.getParam("projectId", null);
+
+    let idList = [];
+    this.state.allUsers.forEach(user => {
+      if (user.isSelected) {
+        idList.push(user.userId);
+      }
+    });
+
+    firestore
+      .collection("Projects")
+      .doc(projectId)
+      .update({
+        Users: idList
+      })
+      .then(() => this.props.navigation.goBack());
   };
 
   selectItem = uEmail => {
@@ -159,19 +171,12 @@ export default class AddProjectScreen extends Component {
       <ThemeProvider theme={theme}>
         <View style={{ flex: 1 }}>
           <Input
-            label="Project name"
-            onChangeText={projectName => this.setState({ projectName })}
-            selectionColor={"purple"}
-          />
-
-          <Input
-            label="Add project members"
+            label="User Search"
             onChangeText={userSearch => this.setState({ userSearch })}
+            inputStyle={{ color: "#89939B" }}
             selectionColor={"purple"}
-            placeholder={"Search user name or email"}
           />
-
-          <View style={{ flex: 1, marginVertical: 5 }}>
+          <View style={{ flex: 6, marginVertical: 5 }}>
             <FlatList
               data={userList}
               renderItem={({ item }) => (
