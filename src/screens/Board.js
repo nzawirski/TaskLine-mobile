@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   View,
   Text,
-  ScrollView,
+  FlatList,
   ActivityIndicator,
   StatusBar
 } from "react-native";
@@ -52,16 +52,17 @@ export default class Board extends Component {
       .onSnapshot(doc => {
         let tasks = [];
         doc.forEach(task =>
-          tasks.push([
-            task.id,
-            task.data().Name,
-            task.data().DateAdded,
-            task.data().DueDate,
-            task.data().AddedBy,
-            task.data().Users
-          ])
+          tasks.push({
+            id: task.id,
+            name: task.data().Name,
+            dateAdded: task.data().DateAdded,
+            dueDate: task.data().DueDate,
+            addedBy: task.data().AddedBy,
+            users: task.data().Users,
+            status: task.data().Status
+          })
         );
-        this.setState({ tasks: tasks, loading: false });
+        this.setState({ tasks, loading: false });
       });
   }
 
@@ -75,68 +76,59 @@ export default class Board extends Component {
       );
     }
 
-    let userList = [];
-    this.state.users.forEach(i => {
-      userList.push(<Text>U: {i}</Text>);
-    });
-
-    let taskList = [];
-    this.state.tasks.forEach(i => {
-      taskList.push(
-        <TaskItem
-          TaskId={i[0]}
-          TaskName={i[1]}
-          DateAdded={i[2]}
-          DueDate={i[3]}
-          AddedBy={i[4]}
-          taskColor={"mediumpurple"}
-        />
-      );
-    });
+    let taskList = this.state.tasks;
 
     return (
       <ThemeProvider theme={theme}>
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 10 }}>
+          <View style={{ flex: 1 }}>
             <Text style={styles.title}>
               Project{" "}
               <Text style={{ color: "mediumpurple" }}>
                 {this.state.projectName}
               </Text>
             </Text>
-            {userList}
-            <ScrollView
-              contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
-            >
-              {taskList}
-            </ScrollView>
-          </View>
-
-          <View style={styles.buttonContainer}>
             <Button
               buttonStyle={{
                 marginHorizontal: 10
               }}
-              icon={<Icon name="user-plus" size={15} color="white" />}
+              icon={<Icon name="edit" size={15} color="white" />}
               onPress={() =>
-                this.props.navigation.navigate("ManageUsers", {
+                this.props.navigation.navigate("ProjectSettings", {
                   projectId: this.state.pid
                 })
               }
-              title=" Manage Users"
             />
-            <Button
-              buttonStyle={{
-                marginHorizontal: 10
-              }}
-              icon={<Icon name="plus-circle" size={15} color="white" />}
-              onPress={() =>
-                this.props.navigation.navigate("AddTask", {
-                  projectId: this.state.pid
-                })
-              }
-              title=" Add Task"
-            />
+            <View style={{ flex: 8, marginTop: 10 }}>
+              <FlatList
+                data={taskList}
+                numColumns={2}
+                renderItem={({ item }) => (
+                  <TaskItem
+                    TaskId={item.id}
+                    TaskName={item.name}
+                    DateAdded={item.dateAdded}
+                    DueDate={item.dueDate}
+                    AddedBy={item.addedBy}
+                    Status={item.status}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                buttonStyle={{
+                  marginHorizontal: 10
+                }}
+                icon={<Icon name="plus-circle" size={15} color="white" />}
+                onPress={() =>
+                  this.props.navigation.navigate("AddTask", {
+                    projectId: this.state.pid
+                  })
+                }
+                title=" Add Task"
+              />
+            </View>
           </View>
         </View>
       </ThemeProvider>

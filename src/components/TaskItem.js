@@ -58,6 +58,26 @@ class TaskItem extends React.Component {
     let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
     let dueDate = new Date(this.props.DueDate.seconds * 1000);
 
+    let taskColor = "";
+            
+    switch (this.props.Status) {
+      case "pending":
+        taskColor = "mediumpurple";
+        break;
+
+      case "progress":
+        taskColor = "cornflowerblue";
+        break;
+
+      case "completed":
+        taskColor = "springgreen";
+        break;
+
+      case "canceled":
+        taskColor = "black";
+        break;
+    }
+
     return (
       <TouchableOpacity
         style={styles.box}
@@ -67,7 +87,7 @@ class TaskItem extends React.Component {
           });
         }}
       >
-      <View style={[styles.mark, {borderTopColor: this.props.taskColor,}]}>
+      <View style={[styles.mark, {borderTopColor: taskColor}]}>
         <Text style={{color: "mediumpurple"}}>{this.props.TaskName}</Text>
         <Text>Added by: <Text style={{color: "mediumpurple"}}>{this.state.user}</Text></Text>
         <Text>({moment(dateAdded).fromNow()})</Text>
@@ -82,10 +102,9 @@ class TaskItem extends React.Component {
 
 const styles = StyleSheet.create({
   box: {
-    width: width / 2.2,
-    height: width / 2.2,
-    margin: width / 45,
-    padding: width / 50,
+    flex: 1,
+    padding: 10,
+    margin: 10,
     borderWidth: 1,
     borderColor: "#484a4c"
   },
