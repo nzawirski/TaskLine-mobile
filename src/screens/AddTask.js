@@ -173,6 +173,7 @@ export default class AddTask extends Component {
         Users: idList,
         AddedBy: auth.currentUser.uid,
         Status: "pending",
+        Categories: [],
       })
       .then(() => this.props.navigation.goBack());
   };
