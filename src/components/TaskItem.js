@@ -4,9 +4,19 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  FlatList
 } from "react-native";
 import { withNavigation } from "react-navigation";
+
+import { Overlay, Button } from "react-native-elements";
+import { ThemeProvider } from "react-native-elements";
+
+import { theme } from "../styles";
+
+import Icon from "react-native-vector-icons/FontAwesome";
+import CategoryItem from "./CategoryItem";
+
 import { firestore } from "../config";
 import moment from "moment";
 import "moment/locale/en-gb";
@@ -15,7 +25,9 @@ var width = Dimensions.get("window").width;
 
 class TaskItem extends React.Component {
   state = {
-    user: ""
+    user: "",
+    number: 0,
+    isOverlayActive: false
   };
 
   getName() {
@@ -54,47 +66,93 @@ class TaskItem extends React.Component {
     }, 100);
   };
 
+  startTimer = () => {
+    this.setState({ number: this.state.number + 1 });
+    this.timer = setTimeout(this.startTimer, 200);
+
+    if (this.state.number >= 4) {
+      this.setState({ isOverlayActive: true });
+    }
+  };
+
+  stopTimer = () => {
+    if (this.state.number > 1 && this.state.number < 4) {
+      this.props.navigation.navigate("TaskScreen", {
+        taskId: this.props.TaskId
+      });
+    }
+
+    this.setState({ number: 0 });
+    clearTimeout(this.timer);
+  };
+
   render() {
     let dateAdded = new Date(this.props.DateAdded.seconds * 1000);
     let dueDate = new Date(this.props.DueDate.seconds * 1000);
 
-    let taskColor = "";
-            
-    switch (this.props.Status) {
-      case "pending":
-        taskColor = "mediumpurple";
-        break;
+    let categories = [];
 
-      case "progress":
-        taskColor = "cornflowerblue";
-        break;
+    this.props.Categories.forEach(item =>
+      categories.push(
+        <View
+          style={{
+            width: 6,
+            height: 22,
+            marginLeft: 5,
+            marginTop: -10,
+            backgroundColor: item.Color
+          }}
+        />
+      )
+    );
 
-      case "completed":
-        taskColor = "springgreen";
-        break;
-
-      case "canceled":
-        taskColor = "black";
-        break;
-    }
+    let categoryList = this.props.ProjectCategories;
 
     return (
       <TouchableOpacity
         style={styles.box}
-        onPress={() => {
-          this.props.navigation.navigate("TaskScreen", {
-            taskId: this.props.TaskId
-          });
-        }}
+        onPressIn={this.startTimer}
+        onPressOut={this.stopTimer}
       >
-      <View style={[styles.mark, {borderTopColor: taskColor}]}>
-        <Text style={{color: "mediumpurple"}}>{this.props.TaskName}</Text>
-        <Text>Added by: <Text style={{color: "mediumpurple"}}>{this.state.user}</Text></Text>
+        {this.state.isOverlayActive ? (
+          <Overlay
+            onBackdropPress={() => this.setState({ isOverlayActive: false })}
+          >
+            <FlatList
+              data={categoryList}
+              renderItem={({ item }) => (
+                <CategoryItem
+                  categoryName={item.Name}
+                  categoryColor={item.Color}
+                />
+              )}
+            />
+            <ThemeProvider theme={theme}>
+              <View style={styles.buttonContainer}>
+                <Button
+                  buttonStyle={{
+                    marginHorizontal: 10
+                  }}
+                  icon={<Icon name="check-circle" size={15} color="white" />}
+                  onPress={this.handleSubmit}
+                  title=" Apply"
+                />
+              </View>
+            </ThemeProvider>
+          </Overlay>
+        ) : (
+          <View />
+        )}
+        <View style={{ flexDirection: "row" }}>{categories}</View>
+        <Text style={{ color: "mediumpurple" }}>{this.props.TaskName}</Text>
+        <Text>
+          Added by:{" "}
+          <Text style={{ color: "mediumpurple" }}>{this.state.user}</Text>
+        </Text>
         <Text>({moment(dateAdded).fromNow()})</Text>
         <Text>Due Date:</Text>
         <Text>{moment(dueDate).format("LLL")}</Text>
         <Text>({moment(dueDate).fromNow()})</Text>
-      </View>
       </TouchableOpacity>
     );
   }
@@ -107,11 +165,6 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     borderColor: "#484a4c"
-  },
-  
-  mark:{
-    borderTopWidth: 5,
-    flex: 1,
   },
 
   title: {

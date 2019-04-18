@@ -30,7 +30,7 @@ export default class Board extends Component {
     tasks: [],
     loading: true,
     search: "",
-    chosenStatus: "pending"
+    chosenStatus: "all"
   };
 
   componentDidMount() {
@@ -59,7 +59,8 @@ export default class Board extends Component {
       .onSnapshot(doc => {
         this.setState({
           projectName: doc.data().Name,
-          users: doc.data().Users
+          users: doc.data().Users,
+          categories: doc.data().Categories
         });
       });
 
@@ -78,6 +79,9 @@ export default class Board extends Component {
             addedBy: task.data().AddedBy,
             users: task.data().Users,
             status: task.data().Status ? task.data().Status : "pending",
+            categories: task.data().Categories
+              ? task.data().Categories
+              : [{ Name: "Base", Color: "mediumpurple" }]
           })
         );
         this.setState({ tasks, loading: false });
@@ -142,17 +146,27 @@ export default class Board extends Component {
     }
 
     let taskList = this.state.tasks;
-    if (this.state.search != "") {
-      taskList = taskList.filter(task => {
-        return (
-          task.name.toLowerCase().includes(this.state.search.toLowerCase()) &&
-          task.status.includes(this.state.chosenStatus)
-        );
-      });
+    if (this.state.chosenStatus != "all") {
+      if (this.state.search != "") {
+        taskList = taskList.filter(task => {
+          return (
+            task.name.toLowerCase().includes(this.state.search.toLowerCase()) &&
+            task.status.includes(this.state.chosenStatus)
+          );
+        });
+      } else {
+        taskList = taskList.filter(task => {
+          return task.status.includes(this.state.chosenStatus);
+        });
+      }
     } else {
-      taskList = taskList.filter(task => {
-        return task.status.includes(this.state.chosenStatus);
-      });
+      if (this.state.search != "") {
+        taskList = taskList.filter(task => {
+          return task.name
+            .toLowerCase()
+            .includes(this.state.search.toLowerCase());
+        });
+      }
     }
 
     return (
@@ -175,6 +189,7 @@ export default class Board extends Component {
                     this.setState({ chosenStatus: itemValue })
                   }
                 >
+                  <Picker.Item label="All" value="all" />
                   <Picker.Item label="Pending" value="pending" />
                   <Picker.Item label="In progress" value="progress" />
                   <Picker.Item label="Completed" value="completed" />
@@ -194,6 +209,8 @@ export default class Board extends Component {
                   DueDate={item.dueDate}
                   AddedBy={item.addedBy}
                   Status={item.status}
+                  Categories={item.categories}
+                  ProjectCategories={this.state.categories}
                 />
               )}
             />

@@ -26,7 +26,7 @@ export default class ProjectSettings extends Component {
     projectName: "",
     users: [],
     loading: true,
-    newCatColor: "#ffffff",
+    newCatColor: "#ffffff"
   };
 
   componentDidMount() {
@@ -83,10 +83,16 @@ export default class ProjectSettings extends Component {
       newCategories = this.state.categories;
     }
 
-    newCategories.push({
-      Name: this.state.newCatName,
-      Color: this.state.newCatColor
-    });
+    if (
+      !this.state.categories.some(element => {
+        return element.Name === this.state.newCatName;
+      })
+    ) {
+      newCategories.push({
+        Name: this.state.newCatName,
+        Color: this.state.newCatColor
+      });
+    }
 
     firestore
       .collection("Projects")
