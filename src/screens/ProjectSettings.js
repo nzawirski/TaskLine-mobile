@@ -13,6 +13,8 @@ import { ThemeProvider } from "react-native-elements";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
+import ColorPalette from "react-native-color-palette";
+
 import { styles, theme } from "../styles";
 import CategoryItem from "../components/CategoryItem";
 
@@ -23,7 +25,8 @@ export default class ProjectSettings extends Component {
     pid: "",
     projectName: "",
     users: [],
-    loading: true
+    loading: true,
+    newCatColor: "#ffffff",
   };
 
   componentDidMount() {
@@ -73,6 +76,26 @@ export default class ProjectSettings extends Component {
       });
   }
 
+  handleSubmit = () => {
+    let newCategories = [];
+
+    if (this.state.categories) {
+      newCategories = this.state.categories;
+    }
+
+    newCategories.push({
+      Name: this.state.newCatName,
+      Color: this.state.newCatColor
+    });
+
+    firestore
+      .collection("Projects")
+      .doc(this.state.pid)
+      .update({
+        Categories: newCategories
+      });
+  };
+
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
@@ -94,35 +117,41 @@ export default class ProjectSettings extends Component {
     return (
       <ThemeProvider theme={theme}>
         <View style={styles.main}>
-        {!this.state.keyboardIsVisible ?
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>Users</Text>
-            <FlatList
-              data={userList}
-              contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
-              renderItem={({ item }) => (
-                <Tooltip
-                  backgroundColor="mediumpurple"
-                  withOverlay={false}
-                  popover={<Text>{item.nick}</Text>}
-                >
-                  <Avatar rounded size="medium" source={{ uri: item.icon }} />
-                </Tooltip>
-              )}
-            />
-            <Button
-              buttonStyle={{
-                marginHorizontal: 10
-              }}
-              icon={<Icon name="user-plus" size={15} color="white" />}
-              onPress={() =>
-                this.props.navigation.navigate("ManageUsers", {
-                  projectId: this.state.pid
-                })
-              }
-              title=" Manage Users"
-            />
-          </View> : <View />}
+          {!this.state.keyboardIsVisible ? (
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>Users</Text>
+              <FlatList
+                data={userList}
+                contentContainerStyle={{
+                  flexDirection: "row",
+                  flexWrap: "wrap"
+                }}
+                renderItem={({ item }) => (
+                  <Tooltip
+                    backgroundColor="mediumpurple"
+                    withOverlay={false}
+                    popover={<Text>{item.nick}</Text>}
+                  >
+                    <Avatar rounded size="medium" source={{ uri: item.icon }} />
+                  </Tooltip>
+                )}
+              />
+              <Button
+                buttonStyle={{
+                  marginHorizontal: 10
+                }}
+                icon={<Icon name="user-plus" size={15} color="white" />}
+                onPress={() =>
+                  this.props.navigation.navigate("ManageUsers", {
+                    projectId: this.state.pid
+                  })
+                }
+                title=" Manage Users"
+              />
+            </View>
+          ) : (
+            <View />
+          )}
 
           <View style={{ flex: 2 }}>
             <Text style={styles.title}>Categories</Text>
@@ -144,15 +173,35 @@ export default class ProjectSettings extends Component {
                 />
               </View>
             </View>
-            <FlatList
-              data={categoryList}
-              renderItem={({ item }) => (
-                <CategoryItem
-                  categoryName={item.Name}
-                  categoryColor={item.Color}
-                />
-              )}
-            />
+            <View style={{ flex: 1, marginTop: -40 }}>
+              <ColorPalette
+                onChange={newCatColor => this.setState({ newCatColor })}
+                value={this.state.newCatColor}
+                colors={[
+                  "#1ABC9C",
+                  "#2ECC71",
+                  "#3498DB",
+                  "#9B59B6",
+                  "#E91E63",
+                  "#F1C40F"
+                ]}
+                title={""}
+                icon={
+                  <Icon name={"check-circle-o"} size={25} color={"white"} />
+                }
+              />
+            </View>
+            <View style={{ flex: 2 }}>
+              <FlatList
+                data={categoryList}
+                renderItem={({ item }) => (
+                  <CategoryItem
+                    categoryName={item.Name}
+                    categoryColor={item.Color}
+                  />
+                )}
+              />
+            </View>
           </View>
         </View>
       </ThemeProvider>
