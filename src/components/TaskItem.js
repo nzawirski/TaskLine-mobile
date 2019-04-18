@@ -55,31 +55,34 @@ class TaskItem extends React.Component {
 
   getCategories() {
     let categoryList = [];
-
-    this.props.ProjectCategories.forEach(item => {
-      if (
-        this.props.Categories.some(element => {
-          return element.Name == item.Name;
-        })
-      ) {
-        categoryList.push({
-          Name: item.Name,
-          Color: item.Color,
-          isSelected: true
-        });
-      } else {
-        categoryList.push({
-          Name: item.Name,
-          Color: item.Color,
-          isSelected: false
-        });
-      }
-    });
-
+    if (this.props.ProjectCategories) {
+      this.props.ProjectCategories.forEach(item => {
+        if (
+          this.props.Categories.some(element => {
+            return element.Name == item.Name;
+          })
+        ) {
+          categoryList.push({
+            Name: item.Name,
+            Color: item.Color,
+            isSelected: true
+          });
+        } else {
+          categoryList.push({
+            Name: item.Name,
+            Color: item.Color,
+            isSelected: false
+          });
+        }
+      });
+    } else {
+      categoryList.push({ Name: "Base", Color: "mediumpurple" })
+    }
     this.setState({ categories: categoryList });
   }
 
   componentDidMount() {
+    this.getCategories();
     this.getName();
   }
 

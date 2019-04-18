@@ -37,7 +37,8 @@ export default class AddProjectScreen extends Component {
       .add({
         Name: this.state.projectName,
         Date: new Date(),
-        Users: idList
+        Users: idList,
+        Categories: [{ Name: "Base", Color: "mediumpurple" }]
       })
       .then(() => this.props.navigation.goBack());
   };
