@@ -26,6 +26,7 @@ export default class ProjectSettings extends Component {
     projectName: "",
     users: [],
     loading: true,
+    newCatName: "",
     newCatColor: "#E74C3C"
   };
 
@@ -54,15 +55,13 @@ export default class ProjectSettings extends Component {
       .doc(projectId)
       .onSnapshot(doc => {
         let categoryList = [];
-        doc
-          .data()
-          .Categories.forEach(category =>
-            categoryList.push({
-              Name: category.Name,
-              Color: category.Color,
-              isSelected: false
-            })
-          );
+        doc.data().Categories.forEach(category =>
+          categoryList.push({
+            Name: category.Name,
+            Color: category.Color,
+            isSelected: false
+          })
+        );
 
         this.setState({
           projectName: doc.data().Name,
@@ -116,19 +115,19 @@ export default class ProjectSettings extends Component {
   deleteCategories = () => {
     let newCategories = [];
 
-    this.state.categories.forEach((category)=>{
-      if(!category.isSelected){
-        newCategories.push({Name: category.Name, Color: category.Color})
+    this.state.categories.forEach(category => {
+      if (!category.isSelected) {
+        newCategories.push({ Name: category.Name, Color: category.Color });
       }
-    })
+    });
 
     firestore
-    .collection("Projects")
-    .doc(this.state.pid)
-    .update({
-      Categories: newCategories
-    });
-  }
+      .collection("Projects")
+      .doc(this.state.pid)
+      .update({
+        Categories: newCategories
+      });
+  };
 
   selectItem = catName => {
     let categoryList = this.state.categories;
@@ -149,6 +148,28 @@ export default class ProjectSettings extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  renderDeleteButton = () => {
+    let isVisible = false;
+
+    this.state.categories.forEach(item => {
+      if (item.isSelected) {
+        isVisible = true;
+      }
+    });
+
+    if (isVisible) {
+      return (
+        <Button
+          buttonStyle={{
+            marginHorizontal: 10
+          }}
+          icon={<Icon name="minus-circle" size={15} color="white" />}
+          onPress={() => this.deleteCategories()}
+        />
+      );
+    }
+  };
+
   render() {
     if (this.state.loading) {
       return (
@@ -161,6 +182,14 @@ export default class ProjectSettings extends Component {
 
     let userList = this.state.projectUsers;
     let categoryList = this.state.categories;
+
+    if (this.state.newCatName != "") {
+      categoryList = categoryList.filter(category => {
+        return category.Name.toLowerCase().includes(
+          this.state.newCatName.toLowerCase()
+        );
+      });
+    }
 
     return (
       <ThemeProvider theme={theme}>
@@ -219,13 +248,7 @@ export default class ProjectSettings extends Component {
                   icon={<Icon name="plus-circle" size={15} color="white" />}
                   onPress={() => this.handleSubmit()}
                 />
-                <Button
-                  buttonStyle={{
-                    marginHorizontal: 10
-                  }}
-                  icon={<Icon name="minus-circle" size={15} color="white" />}
-                  onPress={() => this.deleteCategories()}
-                />
+                {this.renderDeleteButton()}
               </View>
             </View>
             <View style={{ flex: 1, marginTop: -40 }}>
