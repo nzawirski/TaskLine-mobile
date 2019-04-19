@@ -26,7 +26,7 @@ export default class ProjectSettings extends Component {
     projectName: "",
     users: [],
     loading: true,
-    newCatColor: "#ffffff"
+    newCatColor: "#E74C3C"
   };
 
   componentDidMount() {
@@ -53,10 +53,21 @@ export default class ProjectSettings extends Component {
       .collection("Projects")
       .doc(projectId)
       .onSnapshot(doc => {
+        let categoryList = [];
+        doc
+          .data()
+          .Categories.forEach(category =>
+            categoryList.push({
+              Name: category.Name,
+              Color: category.Color,
+              isSelected: false
+            })
+          );
+
         this.setState({
           projectName: doc.data().Name,
           users: doc.data().Users,
-          categories: doc.data().Categories
+          categories: categoryList
         });
 
         firestore.collection("Users").onSnapshot(doc2 => {
@@ -100,6 +111,37 @@ export default class ProjectSettings extends Component {
       .update({
         Categories: newCategories
       });
+  };
+
+  deleteCategories = () => {
+    let newCategories = [];
+
+    this.state.categories.forEach((category)=>{
+      if(!category.isSelected){
+        newCategories.push({Name: category.Name, Color: category.Color})
+      }
+    })
+
+    firestore
+    .collection("Projects")
+    .doc(this.state.pid)
+    .update({
+      Categories: newCategories
+    });
+  }
+
+  selectItem = catName => {
+    let categoryList = this.state.categories;
+
+    categoryList.forEach(item => {
+      if (catName == item.Name) {
+        item.isSelected = !item.isSelected;
+      }
+    });
+
+    this.setState({
+      categories: categoryList
+    });
   };
 
   componentWillUnmount() {
@@ -177,6 +219,13 @@ export default class ProjectSettings extends Component {
                   icon={<Icon name="plus-circle" size={15} color="white" />}
                   onPress={() => this.handleSubmit()}
                 />
+                <Button
+                  buttonStyle={{
+                    marginHorizontal: 10
+                  }}
+                  icon={<Icon name="minus-circle" size={15} color="white" />}
+                  onPress={() => this.deleteCategories()}
+                />
               </View>
             </View>
             <View style={{ flex: 1, marginTop: -40 }}>
@@ -200,10 +249,13 @@ export default class ProjectSettings extends Component {
             <View style={{ flex: 2 }}>
               <FlatList
                 data={categoryList}
+                extraData={this.state}
                 renderItem={({ item }) => (
                   <CategoryItem
+                    onPress={() => this.selectItem(item.Name)}
                     categoryName={item.Name}
                     categoryColor={item.Color}
+                    isSelected={item.isSelected}
                   />
                 )}
               />

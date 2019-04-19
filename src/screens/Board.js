@@ -200,6 +200,7 @@ export default class Board extends Component {
 
             <FlatList
               data={taskList}
+              extraData={this.state}
               numColumns={2}
               renderItem={({ item }) => (
                 <TaskItem

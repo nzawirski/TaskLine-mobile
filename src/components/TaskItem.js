@@ -96,15 +96,15 @@ class TaskItem extends React.Component {
 
   startTimer = () => {
     this.setState({ number: this.state.number + 1 });
-    this.timer = setTimeout(this.startTimer, 200);
+    this.timer = setTimeout(this.startTimer, 75);
 
-    if (this.state.number >= 4) {
+    if (this.state.number >= 5) {
       this.setState({ isOverlayActive: true });
     }
   };
 
   stopTimer = () => {
-    if (this.state.number > 1 && this.state.number < 4) {
+    if (this.state.number > 1 && this.state.number < 5) {
       this.props.navigation.navigate("TaskScreen", {
         taskId: this.props.TaskId
       });
@@ -136,7 +136,6 @@ class TaskItem extends React.Component {
     let categoryList = this.state.categories;
 
     categoryList.forEach(item => {
-      console.log("catName >> " + catName + "item.Name >> " + item.Name);
       if (catName == item.Name) {
         item.isSelected = !item.isSelected;
       }
@@ -207,7 +206,7 @@ class TaskItem extends React.Component {
         ) : (
           <View />
         )}
-        <View style={{ flexDirection: "row" }}>{categories}</View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>{categories}</View>
         <Text style={{ color: "mediumpurple" }}>{this.props.TaskName}</Text>
         <Text>
           Added by:{" "}
