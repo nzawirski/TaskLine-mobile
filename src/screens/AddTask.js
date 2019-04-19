@@ -154,28 +154,46 @@ export default class AddTask extends Component {
   };
 
   handleSubmit = () => {
-    const { navigation } = this.props;
-    const projectId = navigation.getParam("projectId", null);
-    let idList = [];
-    this.state.allUsers.forEach(user => {
-      if (user.isSelected) {
-        idList.push(user.userId);
-      }
-    });
-    firestore
-      .collection("Tasks")
-      .add({
-        Name: this.state.taskName,
-        Description: "",
-        DateAdded: new Date(),
-        DueDate: this.state.dueDate,
-        ProjectId: projectId,
-        Users: idList,
-        AddedBy: auth.currentUser.uid,
-        Status: "pending",
-        Categories: [],
-      })
-      .then(() => this.props.navigation.goBack());
+    if (this.state.taskName) {
+      const { navigation } = this.props;
+      const projectId = navigation.getParam("projectId", null);
+      let idList = [];
+      this.state.allUsers.forEach(user => {
+        if (user.isSelected) {
+          idList.push(user.userId);
+        }
+      });
+      firestore
+        .collection("Tasks")
+        .add({
+          Name: this.state.taskName,
+          Description: "",
+          DateAdded: new Date(),
+          DueDate: this.state.dueDate,
+          ProjectId: projectId,
+          Users: idList,
+          AddedBy: auth.currentUser.uid,
+          Status: "pending",
+          Categories: []
+        })
+        .then(() => {
+          firestore
+            .collection("Users")
+            .doc(auth.currentUser.uid)
+            .get()
+            .then(user => {
+              firestore
+                .collection("Changes")
+                .add({
+                  Who: user.data().nick,
+                  Did: "created task",
+                  What: this.state.taskName,
+                  Users: idList
+                })
+                .then(() => this.props.navigation.goBack());
+            });
+        });
+    }
   };
 
   selectItem = uEmail => {

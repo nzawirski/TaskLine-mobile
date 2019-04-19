@@ -26,21 +26,39 @@ export default class AddProjectScreen extends Component {
   };
 
   handleSubmit = () => {
-    let idList = [];
-    this.state.allUsers.forEach(user => {
-      if (user.isSelected) {
-        idList.push(user.userId);
-      }
-    });
-    firestore
-      .collection("Projects")
-      .add({
-        Name: this.state.projectName,
-        Date: new Date(),
-        Users: idList,
-        Categories: [{ Name: "Base", Color: "mediumpurple" }]
-      })
-      .then(() => this.props.navigation.goBack());
+    if (this.state.projectName) {
+      let idList = [];
+      this.state.allUsers.forEach(user => {
+        if (user.isSelected) {
+          idList.push(user.userId);
+        }
+      });
+      firestore
+        .collection("Projects")
+        .add({
+          Name: this.state.projectName,
+          Date: new Date(),
+          Users: idList,
+          Categories: [{ Name: "Base", Color: "mediumpurple" }]
+        })
+        .then(() => {
+          firestore
+            .collection("Users")
+            .doc(auth.currentUser.uid)
+            .get()
+            .then(user => {
+              firestore
+                .collection("Changes")
+                .add({
+                  Who: user.data().nick,
+                  Did: "created project",
+                  What: this.state.projectName,
+                  Users: idList
+                })
+                .then(() => this.props.navigation.goBack());
+            });
+        });
+    }
   };
 
   componentDidMount() {
@@ -144,7 +162,9 @@ export default class AddProjectScreen extends Component {
       userList = userList.filter(user => {
         return (
           user.isSelected == true ||
-          user.nick.toLowerCase().includes(this.state.userSearch.toLowerCase()) ||
+          user.nick
+            .toLowerCase()
+            .includes(this.state.userSearch.toLowerCase()) ||
           user.email.toLowerCase().includes(this.state.userSearch.toLowerCase())
         );
       });
