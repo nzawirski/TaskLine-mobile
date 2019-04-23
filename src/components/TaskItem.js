@@ -23,9 +23,9 @@ import "moment/locale/en-gb";
 class TaskItem extends React.Component {
   state = {
     user: "",
-    number: 0,
     categories: [],
-    isOverlayActive: false
+    isOverlayActive: false,
+    isCompact: false
   };
 
   getName() {
@@ -76,7 +76,7 @@ class TaskItem extends React.Component {
         }
       });
     } else {
-      categoryList.push({ Name: "Base", Color: "mediumpurple" })
+      categoryList.push({ Name: "Base", Color: "mediumpurple" });
     }
     this.setState({ categories: categoryList });
   }
@@ -94,25 +94,10 @@ class TaskItem extends React.Component {
     }, 100);
   };
 
-  startTimer = () => {
-    this.setState({ number: this.state.number + 1 });
-    this.timer = setTimeout(this.startTimer, 75);
-
-    if (this.state.number >= 5) {
-      this.setState({ isOverlayActive: true });
-    }
-  };
-
-  stopTimer = () => {
-    if (this.state.number > 1 && this.state.number < 5) {
-      this.props.navigation.navigate("TaskScreen", {
-        taskId: this.props.TaskId
-      });
-    }
-
-    this.setState({ number: 0 });
-    clearTimeout(this.timer);
-  };
+  deleteTask = () => {
+    firestore.collection("Tasks").doc(this.props.TaskId).delete();
+    this.setState({isCompact: false})
+  }
 
   handleSubmit = () => {
     let catList = [];
@@ -168,14 +153,89 @@ class TaskItem extends React.Component {
 
     let categoryList = this.state.categories;
 
-    return (
-      <TouchableOpacity
-        style={styles.box}
-        onPressIn={this.startTimer}
-        onPressOut={this.stopTimer}
-      >
-        {this.state.isOverlayActive ? (
+    if (this.state.isCompact) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            borderColor: "#484a4c",
+            backgroundColor: "mediumpurple",
+            margin: 10,
+            padding: 10,
+            flexDirection: "row"
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                height: 140,
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              onPress={() =>{
+                this.props.navigation.navigate("TaskScreen", {
+                  taskId: this.props.TaskId
+                })
+                this.setState({ isCompact: false });
+              }
+              }
+            >
+              <Icon name="edit" size={15} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                height: 70,
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              onPress={() =>
+                this.setState({ isOverlayActive: true, isCompact: false })
+              }
+            >
+              <Icon name="tags" size={15} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                height: 70,
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              onPress={this.deleteTask}
+            >
+              <Icon name="trash" size={15} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.box}>
+          <TouchableOpacity
+            style={{ minHeight: 140 }}
+            onPress={() => this.setState({ isCompact: true })}
+          >
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {categories}
+            </View>
+            <Text style={{ color: "mediumpurple" }}>{this.props.TaskName}</Text>
+            <Text>
+              Added by:{" "}
+              <Text style={{ color: "mediumpurple" }}>{this.state.user}</Text>
+            </Text>
+            <Text>({moment(dateAdded).fromNow()})</Text>
+            <Text>Due Date:</Text>
+            <Text>{moment(dueDate).format("LLL")}</Text>
+            <Text>({moment(dueDate).fromNow()})</Text>
+          </TouchableOpacity>
+
           <Overlay
+            isVisible={this.state.isOverlayActive}
             onBackdropPress={() => this.setState({ isOverlayActive: false })}
           >
             <FlatList
@@ -203,30 +263,18 @@ class TaskItem extends React.Component {
               </View>
             </ThemeProvider>
           </Overlay>
-        ) : (
-          <View />
-        )}
-        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>{categories}</View>
-        <Text style={{ color: "mediumpurple" }}>{this.props.TaskName}</Text>
-        <Text>
-          Added by:{" "}
-          <Text style={{ color: "mediumpurple" }}>{this.state.user}</Text>
-        </Text>
-        <Text>({moment(dateAdded).fromNow()})</Text>
-        <Text>Due Date:</Text>
-        <Text>{moment(dueDate).format("LLL")}</Text>
-        <Text>({moment(dueDate).fromNow()})</Text>
-      </TouchableOpacity>
-    );
+        </View>
+      );
+    }
   }
 }
 
 const styles = StyleSheet.create({
   box: {
     flex: 1,
-    padding: 10,
     margin: 10,
     borderWidth: 1,
+    padding: 10,
     borderColor: "#484a4c"
   },
 

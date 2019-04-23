@@ -9,7 +9,7 @@ import {
   Picker
 } from "react-native";
 
-import { Input, Button } from "react-native-elements";
+import { Input, Button, Overlay } from "react-native-elements";
 import { ThemeProvider } from "react-native-elements";
 
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -30,7 +30,9 @@ export default class TaskScreen extends Component {
     allUsers: [],
     taskUsers: [],
     projectUsers: [],
-    loading: true
+    loading: true,
+    isUsersOverlayActive: false,
+    isSubtasksOverlayActive: false
   };
 
   componentDidMount() {
@@ -158,44 +160,59 @@ export default class TaskScreen extends Component {
   };
 
   renderDateAndStatusPicker = () => {
-    if (!this.state.keyboardIsVisible) {
+    if (!this.state.keyboardIsVisible || this.state.isUsersOverlayActive) {
       return (
         /* Due date */
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ alignSelf: "center" }}>Due Date:</Text>
-            <Text style={{ color: "mediumpurple", alignSelf: "center" }}>
-              {moment(this.state.dueDate).format("LLL")}
-            </Text>
-            <Button
-              buttonStyle={{
-                marginHorizontal: 10
-              }}
-              icon={<Icon name="calendar" size={15} color="white" />}
-              onPress={this._showDateTimePicker}
-              title=" Select Date"
-            />
-            <DateTimePicker
-              mode={"datetime"}
-              isVisible={this.state.isDateTimePickerVisible}
-              onConfirm={this._handleDatePicked}
-              onCancel={this._hideDateTimePicker}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ alignSelf: "center" }}>Status:</Text>
-            <Picker
-              selectedValue={this.state.status}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({ status: itemValue })
-              }
-            >
-              <Picker.Item label="Pending" value="pending" />
-              <Picker.Item label="In progress" value="progress" />
-              <Picker.Item label="Completed" value="completed" />
-              <Picker.Item label="Canceled" value="canceled" />
-            </Picker>
-          </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ alignSelf: "center" }}>Due Date:</Text>
+          <Text style={{ color: "mediumpurple", alignSelf: "center" }}>
+            {moment(this.state.dueDate).format("LLL")}
+          </Text>
+          <Button
+            buttonStyle={{
+              margin: 10
+            }}
+            icon={<Icon name="calendar" size={15} color="white" />}
+            onPress={this._showDateTimePicker}
+            title=" Select Date"
+          />
+          <DateTimePicker
+            mode={"datetime"}
+            isVisible={this.state.isDateTimePickerVisible}
+            onConfirm={this._handleDatePicked}
+            onCancel={this._hideDateTimePicker}
+          />
+
+          <Button
+            buttonStyle={{
+              margin: 10
+            }}
+            icon={<Icon name="user" size={15} color="white" />}
+            onPress={() => this.setState({ isUsersOverlayActive: true })}
+            title=" Assign members"
+          />
+
+          <Button
+            buttonStyle={{
+              margin: 10
+            }}
+            icon={<Icon name="list" size={15} color="white" />}
+            onPress={() => this.setState({ isSubtasksOverlayActive: true })}
+            title=" Subtasks"
+          />
+
+          <Text style={{ alignSelf: "center" }}>Status:</Text>
+          <Picker
+            selectedValue={this.state.status}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({ status: itemValue })
+            }
+          >
+            <Picker.Item label="Pending" value="pending" />
+            <Picker.Item label="In progress" value="progress" />
+            <Picker.Item label="Completed" value="completed" />
+            <Picker.Item label="Canceled" value="canceled" />
+          </Picker>
         </View>
       );
     }
@@ -268,26 +285,41 @@ export default class TaskScreen extends Component {
           {/* Date and Status Picker */}
           {this.renderDateAndStatusPicker()}
           {/* User Search */}
-          <Input
-            label="Assign members"
-            onChangeText={userSearch => this.setState({ userSearch })}
-            selectionColor={"purple"}
-            placeholder="Search user name or email"
-          />
-          <View style={{ flex: 1, marginVertical: 5 }}>
-            <FlatList
-              data={userList}
-              renderItem={({ item }) => (
-                <UserItem
-                  onPress={() => this.selectItem(item.email)}
-                  id={item.userId}
-                  nick={item.nick}
-                  email={item.email}
-                  isSelected={item.isSelected}
-                />
-              )}
+          <Overlay
+            height={300}
+            isVisible={this.state.isUsersOverlayActive}
+            onBackdropPress={() =>
+              this.setState({ isUsersOverlayActive: false })
+            }
+          >
+            <Input
+              label="Assign members"
+              onChangeText={userSearch => this.setState({ userSearch })}
+              selectionColor={"purple"}
+              placeholder="Search user name or email"
             />
-          </View>
+            <View style={{ flex: 1, marginVertical: 5 }}>
+              <FlatList
+                data={userList}
+                renderItem={({ item }) => (
+                  <UserItem
+                    onPress={() => this.selectItem(item.email)}
+                    id={item.userId}
+                    nick={item.nick}
+                    email={item.email}
+                    isSelected={item.isSelected}
+                  />
+                )}
+              />
+            </View>
+          </Overlay>
+          {/*Subtasks Overlay*/}
+          <Overlay
+            isVisible={this.state.isUsersOverlayActive}
+            onBackdropPress={() =>
+              this.setState({ isUsersOverlayActive: false })
+            }
+          ></Overlay>
           {/* Buttons */}
           {this.renderButtons()}
         </View>
