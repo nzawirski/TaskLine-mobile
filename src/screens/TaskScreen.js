@@ -315,9 +315,9 @@ export default class TaskScreen extends Component {
           </Overlay>
           {/*Subtasks Overlay*/}
           <Overlay
-            isVisible={this.state.isUsersOverlayActive}
+            isVisible={this.state.isSubtasksOverlayActive}
             onBackdropPress={() =>
-              this.setState({ isUsersOverlayActive: false })
+              this.setState({ isSubtasksOverlayActive: false })
             }
           ></Overlay>
           {/* Buttons */}
