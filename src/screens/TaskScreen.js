@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 import { styles, theme } from "../styles";
 import UserItem from "../components/UserItem";
+import SubtaskItem from "../components/SubtaskItem";
 
 import { firestore } from "../config";
 
@@ -28,7 +29,7 @@ export default class TaskScreen extends Component {
     taskId: "",
     userSearch: "",
     allUsers: [],
-    taskUsers: [],
+    allTasks: [],
     projectUsers: [],
     loading: true,
     isUsersOverlayActive: false,
@@ -67,14 +68,36 @@ export default class TaskScreen extends Component {
           dateAdded: doc.data().DateAdded,
           dueDate: doc.data().DueDate.toDate(),
           projectId: doc.data().ProjectId,
-
-          status: doc.data().Status
+          status: doc.data().Status,
+          parent: doc.data().ParentTask ? doc.data().ParentTask : false
         });
         firestore
           .collection("Projects")
           .doc(doc.data().ProjectId)
           .onSnapshot(doc2 => {
             this.setState({ projectUsers: doc2.data().Users });
+          });
+
+        // get all tasks
+        firestore
+          .collection("Tasks")
+          .where("ProjectId", "==", doc.data().ProjectId)
+          .onSnapshot(tasks => {
+            let allTasks = [];
+            tasks.forEach(doc3 => {
+              if (doc3.id != doc.id) {
+                allTasks.push({
+                  id: doc3.id,
+                  name: doc3.data().Name,
+                  parent: doc3.data().ParentTask
+                    ? doc3.data().ParentTask
+                    : false,
+                  isSubtask: doc.id == doc3.data().ParentTask ? true : false,
+                  isParent: doc3.id == doc.data().ParentTask ? true : false
+                });
+              }
+            });
+            this.setState({ allTasks });
           });
       });
 
@@ -127,6 +150,13 @@ export default class TaskScreen extends Component {
       }
     });
 
+    let parent = false;
+    this.state.allTasks.forEach(task => {
+      if (task.isParent) {
+        parent = task.id;
+      }
+    });
+
     firestore
       .collection("Tasks")
       .doc(this.state.taskId)
@@ -138,7 +168,8 @@ export default class TaskScreen extends Component {
             : "",
           Status: this.state.status ? this.state.status : "pending",
           Users: idList,
-          DueDate: this.state.dueDate
+          DueDate: this.state.dueDate,
+          ParentTask: parent
         },
         { merge: true }
       )
@@ -156,6 +187,26 @@ export default class TaskScreen extends Component {
 
     this.setState({
       allUsers: userList
+    });
+  };
+
+  selectParent = taskId => {
+    let taskList = this.state.allTasks;
+
+    taskList.forEach(item => {
+      if (item.id == taskId) {
+        if (item.isParent || item.isSubtask) {
+          item.isParent = false;
+        } else {
+          item.isParent = true;
+        }
+      } else {
+        item.isParent = false;
+      }
+    });
+
+    this.setState({
+      allTasks: taskList
     });
   };
 
@@ -267,6 +318,11 @@ export default class TaskScreen extends Component {
       });
     }
 
+    let taskList = this.state.allTasks;
+
+    //console logs to check db integrity
+    //taskList.forEach(item => console.log(" Name >> " + item.name + " Subtask >> " + item.isSubtask + " isParent >> " + item.isParent + " Parent >>>> " + item.parent))
+
     return (
       <ThemeProvider theme={theme}>
         <View style={{ flex: 1 }}>
@@ -319,7 +375,23 @@ export default class TaskScreen extends Component {
             onBackdropPress={() =>
               this.setState({ isSubtasksOverlayActive: false })
             }
-          ></Overlay>
+          >
+            <Text style={{ alignSelf: "center" }}>Tasks:</Text>
+
+            <FlatList
+              data={taskList}
+              extraData={this.state}
+              renderItem={({ item }) => (
+                <SubtaskItem
+                  onPress={() => this.selectParent(item.id)}
+                  subtaskName={item.name}
+                  taskId={item.id}
+                  isSubtask={item.isSubtask}
+                  isParent={item.isParent}
+                />
+              )}
+            />
+          </Overlay>
           {/* Buttons */}
           {this.renderButtons()}
         </View>

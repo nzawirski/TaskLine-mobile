@@ -174,7 +174,8 @@ export default class AddTask extends Component {
           Users: idList,
           AddedBy: auth.currentUser.uid,
           Status: "pending",
-          Categories: []
+          Categories: [],
+          ParentTask: false,
         })
         .then(() => {
           firestore
