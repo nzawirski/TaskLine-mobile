@@ -16,7 +16,8 @@ import { styles, theme } from "../styles";
 import ChangeLogItem from "../components/ChangeLogItem";
 
 import { auth, firestore } from "../config";
-
+import moment from "moment";
+import "moment/locale/en-gb";
 export default class Home extends Component {
   logOut = () => {
     try {
@@ -46,13 +47,15 @@ export default class Home extends Component {
     firestore
       .collection("Changes")
       .where("Users", "array-contains", auth.currentUser.uid)
+      .orderBy("When","desc")
       .onSnapshot(query => {
         let logs = [];
         query.forEach(doc =>
           logs.push({
             who: doc.data().Who,
             did: doc.data().Did,
-            what: doc.data().What
+            what: doc.data().What,
+            when: doc.data().When
           })
         );
         this.setState({ logs, loading: false });
@@ -97,7 +100,7 @@ export default class Home extends Component {
             <FlatList
               data={logs}
               renderItem={({ item }) => (
-                <ChangeLogItem who={item.who} did={item.did} what={item.what} />
+                <ChangeLogItem who={item.who} did={item.did} what={item.what} when={item.when.seconds * 1000} />
               )}
             />
           </View>

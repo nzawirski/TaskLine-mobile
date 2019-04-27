@@ -189,6 +189,7 @@ export default class AddTask extends Component {
                   Who: user.data().nick,
                   Did: "created task",
                   What: this.state.taskName,
+                  When: new Date(),
                   Users: idList
                 })
                 .then(() => this.props.navigation.goBack());

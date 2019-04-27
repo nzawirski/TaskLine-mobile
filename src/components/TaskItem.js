@@ -17,8 +17,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import CategoryItem from "./CategoryItem";
 
 import { firestore } from "../config";
+import { auth } from "../config";
+
 import moment from "moment";
 import "moment/locale/en-gb";
+
 
 class TaskItem extends React.Component {
   state = {
@@ -85,6 +88,7 @@ class TaskItem extends React.Component {
   componentDidMount() {
     this.getCategories();
     this.getName();
+    
   }
 
   componentWillReceiveProps = () => {
@@ -96,10 +100,34 @@ class TaskItem extends React.Component {
   };
 
   deleteTask = () => {
-    firestore.collection("Tasks").doc(this.props.TaskId).delete()
-
+    this.setState({isDeleteOverlayActive: false})
     this.setState({isCompact: false})
-    this.selectItem({isDeleteOverlayActive: false})
+    
+    let taskName = this.props.TaskName ? this.props.TaskName : "unknown"
+
+    firestore.collection("Tasks").doc(this.props.TaskId).delete().then(() => {
+
+      firestore
+        .collection("Users")
+        .doc(auth.currentUser.uid)
+        .get()
+        .then(user => {
+          firestore
+            .collection("Changes")
+            .add({
+              Who: user.data().nick,
+              Did: "deleted task",
+              What: taskName,
+              When: new Date(),
+              Users: this.props.Users
+            }).then(()=>{
+              console.log("Log added >>> ",taskName, this.props.Users)
+            }).catch((e)=>{
+              console.error("Something wrong amigo: ", e)
+            })
+        });
+    });
+    
   }
 
   handleSubmit = () => {
@@ -242,7 +270,7 @@ class TaskItem extends React.Component {
             <Text>{moment(dueDate).format("LLL")}</Text>
             <Text>({moment(dueDate).fromNow()})</Text>
           </TouchableOpacity>
-        {/* Choosing tags */}
+        {/* Overlay >> Choosing tags */}
           <Overlay
             isVisible={this.state.isTagsOverlayActive}
             onBackdropPress={() => this.setState({ isTagsOverlayActive: false })}
@@ -273,7 +301,7 @@ class TaskItem extends React.Component {
             </ThemeProvider>
           </Overlay>
 
-          {/* Deleting task "Are you sure?" */}
+          {/* Overlay >> Deleting task "Are you sure?" */}
           <Overlay
             height={210}
             isVisible={this.state.isDeleteOverlayActive}
@@ -300,7 +328,7 @@ class TaskItem extends React.Component {
                   buttonStyle={{
                     marginVertical: 10
                   }}
-                  icon={<Icon name="check-circle" size={15} color="white" />}
+                  icon={<Icon name="window-close" size={15} color="white" />}
                   onPress={() => this.setState({ isDeleteOverlayActive: false })}
                   title=" Nah"
                 />

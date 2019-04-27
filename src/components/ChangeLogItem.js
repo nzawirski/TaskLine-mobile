@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import moment from "moment";
+import "moment/locale/en-gb";
 export default class ChangeLogItem extends Component {
   render() {
     return (
@@ -9,7 +10,8 @@ export default class ChangeLogItem extends Component {
           <Text>
             <Text style={{ color: "mediumpurple" }}>{this.props.who}</Text>{" "}
             <Text>{this.props.did}</Text>{" "}
-            <Text style={{ color: "mediumpurple" }}>{this.props.what}</Text>
+            <Text style={{ color: "mediumpurple" }}>{this.props.what}</Text>{" "}
+            <Text>{moment(this.props.when).fromNow()}</Text>
           </Text>
         </View>
       </TouchableOpacity>
