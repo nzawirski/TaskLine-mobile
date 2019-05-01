@@ -56,7 +56,7 @@ export default class TaskScreen extends Component {
 
     this.setState({ taskId: taskId });
     //get task data from db
-    firestore
+    this.unsubscribe = firestore
       .collection("Tasks")
       .doc(taskId)
       .onSnapshot(doc => {
@@ -128,6 +128,8 @@ export default class TaskScreen extends Component {
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+    
+    this.unsubscribe();
   }
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });

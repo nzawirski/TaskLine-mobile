@@ -81,7 +81,8 @@ export default class Board extends Component {
             status: task.data().Status ? task.data().Status : "pending",
             categories: task.data().Categories
               ? task.data().Categories
-              : [{ Name: "Base", Color: "mediumpurple" }]
+              : [{ Name: "Base", Color: "mediumpurple" }],
+            users: task.data().Users
           })
         );
         this.setState({ tasks, loading: false });
@@ -211,6 +212,7 @@ export default class Board extends Component {
                   AddedBy={item.addedBy}
                   Status={item.status}
                   Categories={item.categories}
+                  Users={item.users}
                   ProjectCategories={this.state.categories}
                 />
               )}

@@ -53,6 +53,7 @@ export default class AddProjectScreen extends Component {
                   Who: user.data().nick,
                   Did: "created project",
                   What: this.state.projectName,
+                  When: new Date(),
                   Users: idList
                 })
                 .then(() => this.props.navigation.goBack());
