@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import {
   View, Text, ActivityIndicator,
-  StatusBar, Keyboard
+  StatusBar, Keyboard, Alert
 } from "react-native";
 import { styles, theme } from "../styles";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Input, Button, Overlay } from "react-native-elements";
 import { ThemeProvider } from "react-native-elements";
 import { auth, firestore } from "../config";
+import * as firebase from 'firebase'
 import moment from "moment";
 import "moment/locale/en-gb";
+
 export default class Options extends Component {
 
   state = {
@@ -63,15 +65,45 @@ export default class Options extends Component {
   };
 
   handleSubmit = () => {
-    firestore
-    .collection("Users")
-    .doc(auth.currentUser.uid)
-    .set(
-      {
-        nick: this.state.nick,
-      },
-      { merge: true }
-    )
+
+
+    this.reauthenticate(this.state.currentPass).then(() => {
+      firestore
+        .collection("Users")
+        .doc(auth.currentUser.uid)
+        .set(
+          {
+            nick: this.state.nick,
+            email: this.state.email
+          },
+          { merge: true }
+        )
+      auth.currentUser.updateEmail(this.state.email).catch((error) => {
+        Alert.alert(error.message);
+      })
+      auth.currentUser.updatePassword(this.state.newPass).catch((error) => {
+        Alert.alert(error.message);
+      })
+    }).then(()=>{
+      Alert.alert("Changes applied successfuly")
+    }).catch((error) => {
+      Alert.alert(error.message);
+    })
+
+
+
+  }
+
+  reauthenticate = (currentPass) => {
+    let user = auth.currentUser;
+    let cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+    return user.reauthenticateWithCredential(cred);
+  }
+
+  renderInfo() {
+    if (!this.state.keyboardIsVisible) {
+      return (<Text style={{ textAlign: "center" }}>You need to provide your current password before applying changes</Text>)
+    }
   }
 
   render() {
@@ -87,8 +119,13 @@ export default class Options extends Component {
     return (
 
       <ThemeProvider theme={theme}>
-        <Text style={styles.title}>Options</Text>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 2 }}>
+          {this.renderInfo()}
+          <Input
+            secureTextEntry={true}
+            onChangeText={currentPass => this.setState({ currentPass })}
+            label="Current password"
+          />
           {/* nick */}
           <Input
             value={this.state.nick}
@@ -99,8 +136,20 @@ export default class Options extends Component {
           <Input
             value={this.state.email}
             onChangeText={email => this.setState({ email })}
-            label="Description"
+            label="Email"
           />
+          {/* new password */}
+          <Input
+            secureTextEntry={true}
+            onChangeText={newPass => this.setState({ newPass })}
+            label="New password"
+          />
+
+        </View>
+        <View style={{ flex: 1 }}>
+          {/* password */}
+
+
           {/* Buttons */}
           {this.renderButtons()}
         </View>
