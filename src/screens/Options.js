@@ -81,9 +81,12 @@ export default class Options extends Component {
       auth.currentUser.updateEmail(this.state.email).catch((error) => {
         Alert.alert(error.message);
       })
-      auth.currentUser.updatePassword(this.state.newPass).catch((error) => {
-        Alert.alert(error.message);
-      })
+      if(this.state.newPass){
+        auth.currentUser.updatePassword(this.state.newPass).catch((error) => {
+          Alert.alert(error.message);
+        })
+      }
+      
     }).then(()=>{
       Alert.alert("Changes applied successfuly")
     }).catch((error) => {
