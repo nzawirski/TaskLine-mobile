@@ -15,7 +15,8 @@ import "moment/locale/en-gb";
 export default class Options extends Component {
 
   state = {
-    loading: true
+    loading: true,
+    isPasswordOverlayActive: false
   };
 
   componentDidMount() {
@@ -56,7 +57,7 @@ export default class Options extends Component {
               marginHorizontal: 10
             }}
             icon={<Icon name="check-circle" size={15} color="white" />}
-            onPress={this.handleSubmit}
+            onPress={this.onApply}
             title=" Apply"
           />
         </View>
@@ -64,49 +65,56 @@ export default class Options extends Component {
     }
   };
 
-  handleSubmit = () => {
+  onApply = () => {
+    //open overlay
+    this.setState({ isPasswordOverlayActive: true });
+  }
 
+  onSubmit = () => {
 
-    this.reauthenticate(this.state.currentPass).then(() => {
-      firestore
-        .collection("Users")
-        .doc(auth.currentUser.uid)
-        .set(
-          {
-            nick: this.state.nick,
-            email: this.state.email
-          },
-          { merge: true }
-        )
-      auth.currentUser.updateEmail(this.state.email).catch((error) => {
-        Alert.alert(error.message);
-      })
-      if(this.state.newPass){
-        auth.currentUser.updatePassword(this.state.newPass).catch((error) => {
+    if (this.state.currentPass) {
+      //hide overlay
+      this.setState({ isPasswordOverlayActive: false });
+      // reauthenticate
+      this.reauthenticate(this.state.currentPass).then(() => {
+        // then apply changes
+
+        /** TODO: This part should work like a transaction to prevent inconsitencies*/
+        firestore
+          .collection("Users")
+          .doc(auth.currentUser.uid)
+          .set(
+            {
+              nick: this.state.nick,
+              email: this.state.email
+            },
+            { merge: true }
+          )
+        auth.currentUser.updateEmail(this.state.email).catch((error) => {
           Alert.alert(error.message);
         })
-      }
-      
-    }).then(()=>{
-      Alert.alert("Changes applied successfuly")
-    }).catch((error) => {
-      Alert.alert(error.message);
-    })
+        /****************************************************************************/
 
+        if (this.state.newPass) {
+          auth.currentUser.updatePassword(this.state.newPass).catch((error) => {
+            Alert.alert(error.message);
+          })
+        }
 
-
+      }).then(() => {
+        Alert.alert("Changes applied successfuly")
+      }).catch((error) => {
+        Alert.alert(error.message);
+      })
+    } else {
+      Alert.alert("Please enter your password");
+    }
   }
 
   reauthenticate = (currentPass) => {
     let user = auth.currentUser;
     let cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
     return user.reauthenticateWithCredential(cred);
-  }
-
-  renderInfo() {
-    if (!this.state.keyboardIsVisible) {
-      return (<Text style={{ textAlign: "center" }}>You need to provide your current password before applying changes</Text>)
-    }
   }
 
   render() {
@@ -123,12 +131,7 @@ export default class Options extends Component {
 
       <ThemeProvider theme={theme}>
         <View style={{ flex: 2 }}>
-          {this.renderInfo()}
-          <Input
-            secureTextEntry={true}
-            onChangeText={currentPass => this.setState({ currentPass })}
-            label="Current password"
-          />
+
           {/* nick */}
           <Input
             value={this.state.nick}
@@ -150,12 +153,41 @@ export default class Options extends Component {
 
         </View>
         <View style={{ flex: 1 }}>
-          {/* password */}
-
 
           {/* Buttons */}
           {this.renderButtons()}
         </View>
+
+        {/* Overlay */}
+        <Overlay
+          height={420}
+          isVisible={this.state.isPasswordOverlayActive}
+          onBackdropPress={() => this.setState({ isPasswordOverlayActive: false })}
+        >
+          <Text style={{
+            fontSize: 24,
+            textAlign: "center"
+          }}>
+            You need to provide your current password before applying changes
+            </Text>
+
+          <Input
+            secureTextEntry={true}
+            onChangeText={currentPass => this.setState({ currentPass })}
+            label="Current password"
+          />
+          <View style={styles.buttonContainer}>
+            <Button
+              buttonStyle={{
+                marginHorizontal: 10
+              }}
+              icon={<Icon name="check-circle" size={15} color="white" />}
+              onPress={this.onSubmit}
+              title=" Submit"
+            />
+          </View>
+
+        </Overlay>
       </ThemeProvider>
 
     );
