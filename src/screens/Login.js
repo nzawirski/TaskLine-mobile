@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
 
-import { Input, Button } from "react-native-elements";
+import { Input, Button, Overlay } from "react-native-elements";
 import { ThemeProvider } from "react-native-elements";
 
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -13,7 +13,8 @@ export default class Login extends Component {
   state = {
     email: "",
     password: "",
-    user: null
+    user: null,
+    isEmailSent: false
   };
 
   componentDidMount() {
@@ -23,11 +24,21 @@ export default class Login extends Component {
   }
 
   handleSubmit = () => {
+    if (this.state.email!==""&&this.state.password!=="") {
     auth
       .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() =>
         this.props.navigation.navigate(auth.currentUser ? "App" : "Auth")
       );
+    }
+  };
+
+  passwordReset = () => {
+    if (this.state.email!=="") {
+      auth.sendPasswordResetEmail(this.state.email).then(() => {
+        this.setState({ isEmailSent: true });
+      });
+    }
   };
 
   render() {
@@ -69,6 +80,27 @@ export default class Login extends Component {
               title=" Login"
             />
           </View>
+
+          <Button
+            buttonStyle={{
+              marginHorizontal: 10
+            }}
+            icon={<Icon name="refresh" size={15} color="white" />}
+            onPress={this.passwordReset}
+            title=" Password Reset"
+          />
+          <Overlay
+          height={130}
+          isVisible={this.state.isEmailSent}
+          onBackdropPress={() => this.setState({ isEmailSent: false })}
+          >
+             <Text style={{
+            fontSize: 24,
+            textAlign: "center"
+          }}>
+            Email with password rest link was sent to you.
+            </Text>
+        </Overlay>
         </View>
       </ThemeProvider>
     );
